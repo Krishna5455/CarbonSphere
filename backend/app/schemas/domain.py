@@ -8,6 +8,12 @@ class PathwayType(str, Enum):
     BIOGAS = "biogas"
     CARBON_MATERIALS = "carbon_materials"
 
+class FeedstockCategory(str, Enum):
+    CROP_RESIDUE = "crop_residue"
+    FOOD_SLURRY = "food_slurry"
+    SORTED_CELLULOSE = "sorted_cellulose"
+    OTHER = "other"
+
 class OptimizationObjective(str, Enum):
     BALANCED = "balanced"
     MAX_CARBON = "max_carbon"
@@ -19,6 +25,7 @@ class WasteStreamInput(BaseModel):
     title: str = Field(...)
     generator_name: str = Field(...)
     waste_type: str = Field(...)
+    feedstock_category: Optional[FeedstockCategory] = Field(default=None)
     quantity_tonnes: float = Field(..., gt=0)
     moisture_pct: float = Field(..., ge=0, le=100)
     ash_pct: float = Field(default=4.2, ge=0, le=100)
@@ -53,41 +60,44 @@ class FacilityResponse(BaseModel):
 class CandidateEvaluation(BaseModel):
     facility_id: str
     facility_name: str
-    facility_location: str
-    operator: str
+    facility_location: str = ""
+    operator: str = ""
     pathway: PathwayType
-    is_feasible: bool
+    is_feasible: bool = True
     rejection_reasons: List[str] = []
     
     # Distance and logistics
-    distance_km: float
-    duration_hrs: float
-    transport_cost_inr: float
-    transport_emissions_tco2e: float
+    latitude: float = 0.0
+    longitude: float = 0.0
+    distance_km: float = 0.0
+    duration_hrs: float = 0.0
+    transport_cost_inr: float = 0.0
+    transport_emissions_tco2e: float = 0.0
     
     # Carbon metrics
-    gross_carbon_avoided_tco2e: float
-    process_emissions_tco2e: float
-    permanent_sequestration_tco2e: float
-    net_carbon_impact_tco2e: float
+    gross_carbon_avoided_tco2e: float = 0.0
+    avoided_fossil_displacement_tco2e: float = 0.0
+    permanent_sequestration_tco2e: float = 0.0
+    process_emissions_tco2e: float = 0.0
+    net_carbon_impact_tco2e: float = 0.0
     
     # Economic metrics
-    gate_fee_revenue_or_cost_inr: float
-    byproduct_yield_tonnes: float
-    byproduct_market_value_inr: float
-    net_economic_value_inr: float
+    gate_fee_revenue_or_cost_inr: float = 0.0
+    byproduct_yield_tonnes: float = 0.0
+    byproduct_market_value_inr: float = 0.0
+    net_economic_value_inr: float = 0.0
     
     # Scores (0 - 100)
-    carbon_score: float
-    economic_score: float
-    logistics_score: float
-    compatibility_score: float
-    capacity_score: float
-    overall_score: float
+    carbon_score: float = 0.0
+    economic_score: float = 0.0
+    logistics_score: float = 0.0
+    compatibility_score: float = 0.0
+    capacity_score: float = 0.0
+    overall_score: float = 0.0
     
     # Explainability
-    key_drivers: List[str]
-    trade_offs: List[str]
+    key_drivers: List[str] = []
+    trade_offs: List[str] = []
 
 class RouteGeometry(BaseModel):
     type: str = "LineString"
@@ -106,6 +116,8 @@ class OptimizationResult(BaseModel):
     # Summary Impact
     net_carbon_impact_tco2e: float
     gross_carbon_avoided_tco2e: float
+    avoided_fossil_displacement_tco2e: float = 0.0
+    permanent_sequestration_tco2e: float = 0.0
     transport_emissions_tco2e: float
     net_economic_value_inr: float
     transport_cost_inr: float

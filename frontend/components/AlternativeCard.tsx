@@ -75,7 +75,7 @@ export default function AlternativeCard({ candidate, rank, isWinner }: Alternati
           <div className="text-base font-extrabold font-mono text-white">
             {candidate.is_feasible ? candidate.overall_score : '—'}
           </div>
-          <div className="text-[9px] uppercase tracking-wider text-gray-500">MCDA Score</div>
+          <div className="text-[9px] uppercase tracking-wider text-gray-500">Score</div>
         </div>
       </div>
 
@@ -99,7 +99,7 @@ export default function AlternativeCard({ candidate, rank, isWinner }: Alternati
         )}
 
         <div className="text-[11px] text-gray-400 ml-auto">
-          Route: <b className="text-gray-200">{candidate.distance_km.toFixed(1)} km</b> ({candidate.duration_hrs.toFixed(1)}h)
+          <b className="text-gray-200">{candidate.distance_km.toFixed(1)} km</b> ({candidate.duration_hrs.toFixed(1)}h)
         </div>
       </div>
 
@@ -110,7 +110,7 @@ export default function AlternativeCard({ candidate, rank, isWinner }: Alternati
             <div className="text-xs font-bold text-emerald-400 font-mono">
               +{candidate.net_carbon_impact_tco2e.toFixed(1)} t
             </div>
-            <div className="text-[10px] text-gray-400">Net CO₂e Abated</div>
+            <div className="text-[10px] text-gray-400">Net Carbon</div>
           </div>
           <div>
             <div className="text-xs font-bold text-amber-300 font-mono">
@@ -122,14 +122,14 @@ export default function AlternativeCard({ candidate, rank, isWinner }: Alternati
             <div className="text-xs font-bold text-sky-400 font-mono">
               ₹{candidate.transport_cost_inr.toLocaleString()}
             </div>
-            <div className="text-[10px] text-gray-400">Freight Cost</div>
+            <div className="text-[10px] text-gray-400">Freight</div>
           </div>
         </div>
       ) : (
         <div className="p-2.5 rounded-lg bg-red-950/20 border border-red-900/30 text-xs text-red-300 my-3 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
           <div className="space-y-1">
-            <div className="font-semibold text-[11px]">Constraint Violations:</div>
+            <div className="font-semibold text-[11px]">Incompatible:</div>
             {candidate.rejection_reasons.map((r, i) => (
               <div key={i} className="text-[11px] text-red-300 leading-snug">• {r}</div>
             ))}

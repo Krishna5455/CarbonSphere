@@ -1,5 +1,7 @@
 export type PathwayType = 'biochar' | 'biogas' | 'carbon_materials';
 
+export type FeedstockCategory = 'crop_residue' | 'food_slurry' | 'sorted_cellulose' | 'other';
+
 export type OptimizationObjective = 
   | 'balanced'
   | 'max_carbon'
@@ -11,6 +13,7 @@ export interface WasteStreamInput {
   title: string;
   generator_name: string;
   waste_type: string;
+  feedstock_category?: FeedstockCategory;
   quantity_tonnes: number;
   moisture_pct: number;
   ash_pct: number;
@@ -53,12 +56,15 @@ export interface CandidateEvaluation {
   
   distance_km: number;
   duration_hrs: number;
+  latitude?: number;
+  longitude?: number;
   transport_cost_inr: number;
   transport_emissions_tco2e: number;
   
   gross_carbon_avoided_tco2e: number;
-  process_emissions_tco2e: number;
+  avoided_fossil_displacement_tco2e: number;
   permanent_sequestration_tco2e: number;
+  process_emissions_tco2e: number;
   net_carbon_impact_tco2e: number;
   
   gate_fee_revenue_or_cost_inr: number;
@@ -77,6 +83,11 @@ export interface CandidateEvaluation {
   trade_offs: string[];
 }
 
+export interface RouteGeometry {
+  type: string;
+  coordinates: [number, number][]; // [lon, lat]
+}
+
 export interface OptimizationResult {
   waste_stream_id?: string;
   objective: OptimizationObjective;
@@ -88,16 +99,15 @@ export interface OptimizationResult {
   
   net_carbon_impact_tco2e: number;
   gross_carbon_avoided_tco2e: number;
+  avoided_fossil_displacement_tco2e: number;
+  permanent_sequestration_tco2e: number;
   transport_emissions_tco2e: number;
   net_economic_value_inr: number;
   transport_cost_inr: number;
   total_distance_km: number;
   estimated_duration_hrs: number;
   
-  route_geometry: {
-    type: string;
-    coordinates: [number, number][]; // [lon, lat]
-  };
+  route_geometry: RouteGeometry;
   
   why_recommended: string;
   detailed_explanation: string[];

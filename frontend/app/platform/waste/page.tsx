@@ -16,15 +16,16 @@ const PRESET_SCENARIOS: { label: string; data: WasteStreamInput }[] = [
       title: '25 Tonnes Agricultural Bagasse & Crop Residue',
       generator_name: 'Baramati Sugarcane Agro Cooperative',
       waste_type: 'Agricultural Biomass / Bagasse',
+      feedstock_category: 'crop_residue',
       quantity_tonnes: 25.0,
       moisture_pct: 14.5,
       ash_pct: 4.2,
       carbon_nitrogen_ratio: 42.0,
       energy_density_mj_kg: 17.2,
       contamination_pct: 1.5,
-      location_name: 'Baramati Agri-Zone, Pune, Maharashtra',
-      latitude: 18.1519,
-      longitude: 74.5771
+      location_name: 'Nira Valley Agricultural Cluster, Baramati Region',
+      latitude: 18.1050,
+      longitude: 74.3750
     }
   },
   {
@@ -33,15 +34,16 @@ const PRESET_SCENARIOS: { label: string; data: WasteStreamInput }[] = [
       title: '40 Tonnes Food Processing Organic Residue',
       generator_name: 'Chakan Food & Brewery Industrial Hub',
       waste_type: 'Food Processing Organic Sludge',
+      feedstock_category: 'food_slurry',
       quantity_tonnes: 40.0,
       moisture_pct: 82.0,
       ash_pct: 2.1,
       carbon_nitrogen_ratio: 24.0,
       energy_density_mj_kg: 4.8,
       contamination_pct: 2.5,
-      location_name: 'Chakan MIDC Phase 2, Pune, Maharashtra',
-      latitude: 18.7597,
-      longitude: 73.8580
+      location_name: 'Bhosari MIDC Industrial Estate, Pune',
+      latitude: 18.6280,
+      longitude: 73.8350
     }
   },
   {
@@ -50,15 +52,16 @@ const PRESET_SCENARIOS: { label: string; data: WasteStreamInput }[] = [
       title: '15 Tonnes Post-Industrial Cellulosic Fiber',
       generator_name: 'Satara Clean Packaging Works',
       waste_type: 'Post-Industrial Cellulosic Fiber Scrap',
+      feedstock_category: 'sorted_cellulose',
       quantity_tonnes: 15.0,
       moisture_pct: 9.0,
       ash_pct: 1.5,
       carbon_nitrogen_ratio: 65.0,
       energy_density_mj_kg: 15.5,
       contamination_pct: 0.8,
-      location_name: 'Shirwal MIDC, Satara, Maharashtra',
-      latitude: 18.1360,
-      longitude: 73.9850
+      location_name: 'Hadapsar Packaging Distribution Hub, Pune',
+      latitude: 18.5020,
+      longitude: 73.9280
     }
   }
 ];
@@ -97,24 +100,23 @@ export default function WasteProfilerPage() {
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Header Title */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <Layers className="w-3.5 h-3.5" />
-            <span>Feedstock Profiling Engine</span>
+            <span>Waste Profiler</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Configure Waste Feedstock Stream
+            Define Waste Feedstock
           </h1>
-          <p className="text-sm text-gray-400 max-w-3xl leading-relaxed">
-            Feedstock physical and chemical parameters determine thermodynamic feasibility across
-            <b> Biochar (Pyrolysis)</b>, <b>Biogas (Anaerobic Digestion)</b>, and <b>Carbon-Negative Materials</b>.
+          <p className="text-xs sm:text-sm text-gray-400 max-w-2xl leading-relaxed">
+            Enter waste specifications to determine compatibility across Biochar, Biogas, and Carbon Materials.
           </p>
         </div>
 
         {/* Preset Chips */}
         <div className="space-y-2">
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            Quick Load Demo Benchmarks:
+            Quick Load Demo Feedstocks:
           </span>
           <div className="flex flex-wrap gap-2.5">
             {PRESET_SCENARIOS.map((preset, i) => (
@@ -141,7 +143,7 @@ export default function WasteProfilerPage() {
             <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-4">
               <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                 <Sliders className="w-4 h-4" />
-                Stream Identity & Logistics Origin
+                Origin & Details
               </h3>
 
               <div className="space-y-3 text-xs">
@@ -157,7 +159,7 @@ export default function WasteProfilerPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 mb-1 font-medium">Waste Generator / Entity</label>
+                  <label className="block text-gray-300 mb-1 font-medium">Generator Name</label>
                   <input
                     type="text"
                     required
@@ -168,7 +170,7 @@ export default function WasteProfilerPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 mb-1 font-medium">Waste Type / Category</label>
+                  <label className="block text-gray-300 mb-1 font-medium">Waste Type</label>
                   <input
                     type="text"
                     required
@@ -232,7 +234,7 @@ export default function WasteProfilerPage() {
             <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-4">
               <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
-                Physical & Chemical Parameters
+                Characteristics
               </h3>
 
               <div className="space-y-4 text-xs">
@@ -319,24 +321,22 @@ export default function WasteProfilerPage() {
 
           {/* Objective Selection Bar */}
           <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-white tracking-wide">
-                  Select Optimization Objective
-                </h3>
-                <p className="text-xs text-gray-400">
-                  Dynamic multi-criteria weighting profile for facility and route ranking
-                </p>
-              </div>
+            <div>
+              <h3 className="text-sm font-bold text-white tracking-wide">
+                Optimization Objective
+              </h3>
+              <p className="text-xs text-gray-400">
+                Choose how to rank candidate pathways and facilities
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
               {[
-                { id: 'balanced', name: 'Balanced Optimization', desc: '30% Carbon • 25% Econ • 20% Logistics' },
-                { id: 'max_carbon', name: 'Max Carbon Reduction', desc: '60% Carbon Abatement Focus' },
-                { id: 'max_economic', name: 'Max Economic Value', desc: '60% Revenue & Tipping Fee Margin' },
-                { id: 'min_logistics', name: 'Min Transport Cost', desc: '60% Local Proximity & Low Miles' },
-                { id: 'max_diversion', name: 'Max Waste Diversion', desc: '40% Capacity Headroom • 30% Fit' },
+                { id: 'balanced', name: 'Balanced', desc: '30% Carbon • 25% Econ • 20% Logistics' },
+                { id: 'max_carbon', name: 'Max Carbon', desc: 'Prioritize total emissions reduction' },
+                { id: 'max_economic', name: 'Max Value', desc: 'Prioritize net circular margin' },
+                { id: 'min_logistics', name: 'Min Distance', desc: 'Prioritize local facilities' },
+                { id: 'max_diversion', name: 'Max Capacity', desc: 'Prioritize available facility headroom' },
               ].map((opt) => (
                 <button
                   key={opt.id}
@@ -374,11 +374,11 @@ export default function WasteProfilerPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Evaluating Pathways & Routing...</span>
+                  <span>Evaluating Pathways...</span>
                 </>
               ) : (
                 <>
-                  <span>Optimize Pathway</span>
+                  <span>Find Optimal Pathway</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

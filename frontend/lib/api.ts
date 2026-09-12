@@ -36,10 +36,24 @@ export async function analyzeWasteStream(
     body: JSON.stringify(waste),
   });
   
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Optimization failed: ${errText}`);
-  }
+  return await res.json();
+}
+
+export async function fetchRoute(
+  originLat: number,
+  originLon: number,
+  destLat: number,
+  destLon: number
+): Promise<{ distance_km: number; duration_hrs: number; geometry: { type: string; coordinates: [number, number][] } }> {
+  const url = new URL(`${API_BASE_URL}/api/route`);
+  url.searchParams.append('origin_lat', originLat.toString());
+  url.searchParams.append('origin_lon', originLon.toString());
+  url.searchParams.append('dest_lat', destLat.toString());
+  url.searchParams.append('dest_lon', destLon.toString());
   
+  const res = await fetch(url.toString());
+  if (!res.ok) {
+    throw new Error(`Route calculation failed: ${res.statusText}`);
+  }
   return await res.json();
 }

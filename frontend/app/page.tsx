@@ -8,6 +8,7 @@ import DisclaimerBanner from '@/components/DisclaimerBanner';
 import { Sparkles, ArrowRight, Flame, Droplets, Box, Compass, Truck, BarChart3, Layers, CheckCircle2, ShieldCheck, ChevronRight } from 'lucide-react';
 import { analyzeWasteStream } from '@/lib/api';
 import { saveCurrentRun } from '@/lib/store';
+import { WasteStreamInput } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
@@ -48,19 +49,20 @@ export default function HomePage() {
 
   const handleLaunchQuickDemo = async (type: string) => {
     setIsOptimizing(true);
-    let payload = {
+    let payload: WasteStreamInput = {
       title: '25 Tonnes Agricultural Bagasse & Crop Residue',
       generator_name: 'Baramati Sugarcane Agro Cooperative',
       waste_type: 'Agricultural Biomass / Bagasse',
+      feedstock_category: 'crop_residue',
       quantity_tonnes: 25.0,
       moisture_pct: 14.5,
       ash_pct: 4.2,
       carbon_nitrogen_ratio: 42.0,
       energy_density_mj_kg: 17.2,
       contamination_pct: 1.5,
-      location_name: 'Baramati Agri-Zone, Pune, Maharashtra',
-      latitude: 18.1519,
-      longitude: 74.5771
+      location_name: 'Nira Valley Agricultural Cluster, Baramati Region',
+      latitude: 18.1050,
+      longitude: 74.3750
     };
 
     if (type === 'food') {
@@ -68,30 +70,32 @@ export default function HomePage() {
         title: '40 Tonnes Food Processing Organic Residue',
         generator_name: 'Chakan Food & Brewery Industrial Hub',
         waste_type: 'Food Processing Organic Sludge',
+        feedstock_category: 'food_slurry',
         quantity_tonnes: 40.0,
         moisture_pct: 82.0,
         ash_pct: 2.1,
         carbon_nitrogen_ratio: 24.0,
         energy_density_mj_kg: 4.8,
         contamination_pct: 2.5,
-        location_name: 'Chakan MIDC Phase 2, Pune, Maharashtra',
-        latitude: 18.7597,
-        longitude: 73.8580
+        location_name: 'Bhosari MIDC Industrial Estate, Pune',
+        latitude: 18.6280,
+        longitude: 73.8350
       };
     } else if (type === 'fiber') {
       payload = {
         title: '15 Tonnes Post-Industrial Cellulosic Fiber',
         generator_name: 'Satara Clean Packaging Works',
         waste_type: 'Post-Industrial Cellulosic Fiber Scrap',
+        feedstock_category: 'sorted_cellulose',
         quantity_tonnes: 15.0,
         moisture_pct: 9.0,
         ash_pct: 1.5,
         carbon_nitrogen_ratio: 65.0,
         energy_density_mj_kg: 15.5,
         contamination_pct: 0.8,
-        location_name: 'Shirwal MIDC, Satara, Maharashtra',
-        latitude: 18.1360,
-        longitude: 73.9850
+        location_name: 'Hadapsar Packaging Distribution Hub, Pune',
+        latitude: 18.5020,
+        longitude: 73.9280
       };
     }
 
@@ -123,7 +127,7 @@ export default function HomePage() {
         <section ref={heroRef} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-lg shadow-emerald-500/10">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Carbon-Aware Waste Pathway Optimization Platform</span>
+            <span>Waste Pathway Optimization Platform</span>
           </div>
 
           <div className="space-y-4 max-w-4xl mx-auto">
@@ -141,8 +145,7 @@ export default function HomePage() {
               ref={subtitleRef}
               className="text-base sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed pt-2"
             >
-              What should your waste become? CarbonSphere identifies the highest-value circular pathway,
-              compatible regional facility, optimized freight route, and verified carbon/economic dividend.
+              Match any waste stream with the highest-value circular pathway, compatible regional facility, route, and carbon/economic return.
             </p>
           </div>
 
@@ -152,7 +155,7 @@ export default function HomePage() {
               href="/platform/waste"
               className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm transition-all shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95"
             >
-              <span>Launch Pathway Optimizer</span>
+              <span>Launch Optimizer</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -160,7 +163,7 @@ export default function HomePage() {
               href="/demo"
               className="w-full sm:w-auto px-7 py-4 rounded-xl glass-panel hover:bg-white/10 text-white font-medium text-sm transition-all border border-[#1e332f] flex items-center justify-center gap-2"
             >
-              <span>HackOut'26 Demo Scenarios</span>
+              <span>Demo Benchmarks</span>
               <ChevronRight className="w-4 h-4 text-emerald-400" />
             </Link>
           </div>
@@ -172,14 +175,14 @@ export default function HomePage() {
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <Layers className="w-4 h-4 text-emerald-400" />
-                    Live Waste Valorization Teaser
+                    Quick Pathway Preview
                   </h3>
                   <p className="text-xs text-gray-400">
-                    Select a waste stream to test the multi-criteria optimization pipeline
+                    Select a waste stream to preview pathway matching
                   </p>
                 </div>
                 <span className="text-[10px] px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono self-start sm:self-auto">
-                  Engine: Live Active
+                  Engine Ready
                 </span>
               </div>
 
@@ -187,7 +190,7 @@ export default function HomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
                   { id: 'agri', title: '25t Agri Bagasse', type: 'Pyrolysis Match', icon: Flame, color: 'text-amber-400' },
-                  { id: 'food', title: '40t Food Sludge', type: 'Biogas AD Match', icon: Droplets, color: 'text-sky-400' },
+                  { id: 'food', title: '40t Food Sludge', type: 'Biogas Match', icon: Droplets, color: 'text-sky-400' },
                   { id: 'fiber', title: '15t Cellulosic Fiber', type: 'Composite Match', icon: Box, color: 'text-purple-400' }
                 ].map((t) => {
                   const Icon = t.icon;
@@ -218,7 +221,7 @@ export default function HomePage() {
                     1
                   </div>
                   <div>
-                    <div className="text-gray-400 text-[10px] uppercase">Input Stream</div>
+                    <div className="text-gray-400 text-[10px] uppercase">Input Waste</div>
                     <div className="text-white font-semibold">
                       {activeWasteType === 'agri' ? '25t Sugarcane Bagasse (14.5% Moisture)' : activeWasteType === 'food' ? '40t Organic Sludge (82% Moisture)' : '15t Industrial Fibers (9% Moisture)'}
                     </div>
@@ -232,9 +235,9 @@ export default function HomePage() {
                     2
                   </div>
                   <div>
-                    <div className="text-gray-400 text-[10px] uppercase">Evaluated Pathway</div>
+                    <div className="text-gray-400 text-[10px] uppercase">Pathway</div>
                     <div className="text-emerald-300 font-semibold capitalize">
-                      {activeWasteType === 'agri' ? 'Biochar Pyrolysis' : activeWasteType === 'food' ? 'Biogas / RNG Digestion' : 'Carbon-Negative Materials'}
+                      {activeWasteType === 'agri' ? 'Biochar Pyrolysis' : activeWasteType === 'food' ? 'Biogas Digestion' : 'Carbon-Negative Materials'}
                     </div>
                   </div>
                 </div>
@@ -246,9 +249,9 @@ export default function HomePage() {
                     3
                   </div>
                   <div>
-                    <div className="text-gray-400 text-[10px] uppercase">Carbon Benefit</div>
+                    <div className="text-gray-400 text-[10px] uppercase">Estimated Impact</div>
                     <div className="text-white font-semibold">
-                      {activeWasteType === 'agri' ? '+31.4 tCO₂e Net Abatement' : activeWasteType === 'food' ? '+35.1 tCO₂e Net Abatement' : '+20.6 tCO₂e Net Abatement'}
+                      {activeWasteType === 'agri' ? '+39.0 tCO₂e Net Abatement' : activeWasteType === 'food' ? '+38.7 tCO₂e Net Abatement' : '+25.9 tCO₂e Net Abatement'}
                     </div>
                   </div>
                 </div>
@@ -266,13 +269,13 @@ export default function HomePage() {
         </section>
 
         {/* CORE PILLARS SECTION */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              A Decision Layer Built for Industrial Ecology
+              Circular Utilization Pathways
             </h2>
             <p className="text-xs sm:text-sm text-gray-400">
-              Moving beyond basic logistics to solve the fundamental question: what should waste become?
+              Evaluate feedstocks across three primary utilization pathways
             </p>
           </div>
 
@@ -283,8 +286,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-bold text-white">Biochar Pyrolysis</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Transforms dry agricultural residues into recalcitrant biocarbon with 100-year carbon permanence,
-                enriching soil microbiology while sequestering atmospheric carbon dioxide.
+                Converts dry crop residues into stable biocarbon, enriching soil and sequestering carbon permanently.
               </p>
               <div className="text-[11px] text-amber-300 font-mono pt-2">
                 Ideal Feedstock: Dry Biomass (&lt;25% Moisture)
@@ -295,13 +297,12 @@ export default function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center mb-4">
                 <Droplets className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-white">Biogas & CBG (AD)</h3>
+              <h3 className="text-lg font-bold text-white">Biogas & CBG</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Diverts high-moisture organic food slurry from landfills, capturing fugitive methane to produce
-                compressed bio-gas and nutrient-dense organic digestate fertilizer.
+                Processes organic slurries to produce biomethane fuel and organic fertilizer, avoiding landfill emissions.
               </p>
               <div className="text-[11px] text-sky-300 font-mono pt-2">
-                Ideal Feedstock: Organic Sludge (65-95% Moisture)
+                Ideal Feedstock: Organic Slurry (65–95% Moisture)
               </div>
             </div>
 
@@ -311,11 +312,10 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-bold text-white">Carbon-Negative Materials</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Upcycles clean fibrous cellulose scrap into structural bio-composite panels and mineralized aggregates,
-                directly displacing high-embodied carbon cement and synthetic resins.
+                Upcycles clean fibrous scrap into structural bio-composites, displacing carbon-intensive materials.
               </p>
               <div className="text-[11px] text-purple-300 font-mono pt-2">
-                Ideal Feedstock: Clean Fibers (&lt;15% Moisture, &lt;3% Ash)
+                Ideal Feedstock: Clean Fibers (&lt;15% Moisture)
               </div>
             </div>
           </div>

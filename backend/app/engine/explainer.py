@@ -23,12 +23,12 @@ def generate_explanation(
     if winner.pathway.value == "biochar":
         details.append(
             f"Feedstock moisture of {waste.moisture_pct:.1f}% is well within the pyrolysis window (<25%), "
-            f"requiring minimal thermal pre-drying and maximizing fixed biocarbon yield."
+            f"requiring minimal thermal pre-drying and maximizing fixed recalcitrant biocarbon yield."
         )
     elif winner.pathway.value == "biogas":
         details.append(
             f"High organic moisture ({waste.moisture_pct:.1f}%) and optimal C:N ratio make this feedstock ideal for "
-            f"rapid anaerobic digestion, preventing uncontrolled methane decomposition in landfills."
+            f"rapid anaerobic digestion, capturing methane to displace fossil natural gas and avoiding landfill decay."
         )
     elif winner.pathway.value == "carbon_materials":
         details.append(
@@ -38,8 +38,13 @@ def generate_explanation(
         
     # 2. Objective alignment
     if objective == OptimizationObjective.MAX_CARBON:
+        carbon_driver = (
+            f"Permanent biogenic sequestration ({winner.permanent_sequestration_tco2e:.1f} tCO2e)"
+            if winner.permanent_sequestration_tco2e > 0
+            else f"Fossil fuel displacement credit ({winner.avoided_fossil_displacement_tco2e:.1f} tCO2e) and landfill avoidance"
+        )
         details.append(
-            f"Carbon prioritization achieved highest ranking: Permanent sequestration ({winner.permanent_sequestration_tco2e:.1f} tCO2e) "
+            f"Carbon prioritization achieved highest ranking: {carbon_driver} "
             f"substantially outweighs transport logistics emissions ({winner.transport_emissions_tco2e:.2f} tCO2e)."
         )
     elif objective == OptimizationObjective.MAX_ECONOMIC:

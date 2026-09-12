@@ -30,20 +30,21 @@ const BENCHMARKS: BenchmarkCardData[] = [
     tonnage: '25.0 Tonnes',
     wasteType: 'Sugarcane Bagasse & Crop Residue',
     expectedPathway: 'biochar',
-    keyPhysics: 'Low moisture (14.5%) & moderate ash (4.2%) yield optimal slow pyrolysis conditions.',
+    keyPhysics: 'Low moisture (14.5%) and moderate ash (4.2%) favor slow pyrolysis for biochar.',
     payload: {
       title: '25 Tonnes Agricultural Bagasse & Crop Residue',
       generator_name: 'Baramati Sugarcane Agro Cooperative',
       waste_type: 'Agricultural Biomass / Bagasse',
+      feedstock_category: 'crop_residue',
       quantity_tonnes: 25.0,
       moisture_pct: 14.5,
       ash_pct: 4.2,
       carbon_nitrogen_ratio: 42.0,
       energy_density_mj_kg: 17.2,
       contamination_pct: 1.5,
-      location_name: 'Baramati Agri-Zone, Pune, Maharashtra',
-      latitude: 18.1519,
-      longitude: 74.5771
+      location_name: 'Nira Valley Agricultural Cluster, Baramati Region',
+      latitude: 18.1050,
+      longitude: 74.3750
     }
   },
   {
@@ -54,20 +55,21 @@ const BENCHMARKS: BenchmarkCardData[] = [
     tonnage: '40.0 Tonnes',
     wasteType: 'Brewery & Food Slurry',
     expectedPathway: 'biogas',
-    keyPhysics: 'High organic moisture (82%) & C:N of 24:1 provide rapid anaerobic methanogenesis.',
+    keyPhysics: 'High moisture (82%) and balanced C:N (24:1) enable anaerobic digestion for biomethane.',
     payload: {
       title: '40 Tonnes Food Processing Organic Residue',
       generator_name: 'Chakan Food & Brewery Industrial Hub',
       waste_type: 'Food Processing Organic Sludge',
+      feedstock_category: 'food_slurry',
       quantity_tonnes: 40.0,
       moisture_pct: 82.0,
       ash_pct: 2.1,
       carbon_nitrogen_ratio: 24.0,
       energy_density_mj_kg: 4.8,
       contamination_pct: 2.5,
-      location_name: 'Chakan MIDC Phase 2, Pune, Maharashtra',
-      latitude: 18.7597,
-      longitude: 73.8580
+      location_name: 'Bhosari MIDC Industrial Estate, Pune',
+      latitude: 18.6280,
+      longitude: 73.8350
     }
   },
   {
@@ -78,20 +80,21 @@ const BENCHMARKS: BenchmarkCardData[] = [
     tonnage: '15.0 Tonnes',
     wasteType: 'Industrial Packaging Fiber',
     expectedPathway: 'carbon_materials',
-    keyPhysics: 'Ultra-low moisture (9.0%) & ash (<1.5%) allow clean bio-composite structural matrix bonding.',
+    keyPhysics: 'Low moisture (9%) and clean fibers allow structural composite manufacturing.',
     payload: {
       title: '15 Tonnes Post-Industrial Cellulosic Fiber',
       generator_name: 'Satara Clean Packaging Works',
       waste_type: 'Post-Industrial Cellulosic Fiber Scrap',
+      feedstock_category: 'sorted_cellulose',
       quantity_tonnes: 15.0,
       moisture_pct: 9.0,
       ash_pct: 1.5,
       carbon_nitrogen_ratio: 65.0,
       energy_density_mj_kg: 15.5,
       contamination_pct: 0.8,
-      location_name: 'Shirwal MIDC, Satara, Maharashtra',
-      latitude: 18.1360,
-      longitude: 73.9850
+      location_name: 'Hadapsar Packaging Distribution Hub, Pune',
+      latitude: 18.5020,
+      longitude: 73.9280
     }
   }
 ];
@@ -131,13 +134,13 @@ export default function DemoPage() {
         <div className="space-y-2 border-b border-[#1e332f] pb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>HackOut'26 Jury Verification Suite</span>
+            <span>Demo Scenarios</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Deterministic Demo Benchmarks
+            Benchmark Demo Scenarios
           </h1>
           <p className="text-sm text-gray-400 max-w-3xl leading-relaxed">
-            Demonstrating differential optimization: CarbonSphere proves that different feedstock chemistry, moisture levels, and locations yield divergent, explainable circular valorization pathways.
+            Run live scenarios to see how different waste characteristics produce different circular pathways.
           </p>
         </div>
 
@@ -168,7 +171,7 @@ export default function DemoPage() {
 
                   <div className="p-3.5 rounded-xl bg-[#121c19] border border-[#1e332f] text-xs text-gray-300 space-y-1.5">
                     <div className="font-semibold text-emerald-400 text-[11px] uppercase tracking-wide">
-                      Thermodynamic Driver:
+                      Key Driver
                     </div>
                     <p className="text-gray-400 leading-relaxed text-[11px]">{bm.keyPhysics}</p>
                   </div>
@@ -184,7 +187,7 @@ export default function DemoPage() {
                       <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/40 space-y-1.5">
                         <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
                           <CheckCircle2 className="w-4 h-4" />
-                          <span>Optimized Solution Found</span>
+                          <span>Optimized Result</span>
                         </div>
                         <div className="text-white font-bold text-xs truncate">
                           {result.recommended_facility_name}
@@ -208,12 +211,12 @@ export default function DemoPage() {
                     {isProcessing ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Evaluating Pathway...</span>
+                        <span>Evaluating...</span>
                       </>
                     ) : (
                       <>
                         <Play className="w-3.5 h-3.5 fill-current" />
-                        <span>{hasRun ? 'Re-Run Optimization' : 'Run Live Benchmark'}</span>
+                        <span>{hasRun ? 'Re-run Scenario' : 'Run Scenario'}</span>
                       </>
                     )}
                   </button>
@@ -223,7 +226,7 @@ export default function DemoPage() {
                       onClick={() => handleInspectRun(bm)}
                       className="w-full py-2 rounded-xl border border-[#1e332f] bg-[#121c19] hover:bg-[#1a2b27] text-gray-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
                     >
-                      <span>Inspect Map & Explainability</span>
+                      <span>View Full Results</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   )}

@@ -130,6 +130,7 @@ async def analyze_waste(
 
     return result
 
+@app.get("/api/route")
 @app.post("/api/route")
 async def calculate_route(
     origin_lat: float = Query(...),

@@ -16,15 +16,16 @@ const DEFAULT_WASTE: WasteStreamInput = {
   title: '25 Tonnes Agricultural Bagasse & Crop Residue',
   generator_name: 'Baramati Sugarcane Agro Cooperative',
   waste_type: 'Agricultural Biomass / Bagasse',
+  feedstock_category: 'crop_residue',
   quantity_tonnes: 25.0,
   moisture_pct: 14.5,
   ash_pct: 4.2,
   carbon_nitrogen_ratio: 42.0,
   energy_density_mj_kg: 17.2,
   contamination_pct: 1.5,
-  location_name: 'Baramati Agri-Zone, Pune, Maharashtra',
-  latitude: 18.1519,
-  longitude: 74.5771
+  location_name: 'Nira Valley Agricultural Cluster, Baramati Region',
+  latitude: 18.1050,
+  longitude: 74.3750
 };
 
 export default function RecommendationsPage() {
@@ -96,10 +97,10 @@ export default function RecommendationsPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
               <Compass className="w-3.5 h-3.5" />
-              <span>Optimal Decision Architecture</span>
+              <span>Step 2: Recommendations</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Recommended Pathway & Facility Match
+              Recommended Pathway & Facility
             </h1>
             <p className="text-xs text-gray-400 mt-1">
               Evaluating: <b className="text-white">{waste.quantity_tonnes}t {waste.waste_type}</b> from <i>{waste.location_name}</i>
@@ -111,13 +112,13 @@ export default function RecommendationsPage() {
               href="/platform/waste"
               className="px-3.5 py-2 rounded-xl text-xs font-medium border border-[#1e332f] bg-[#0e1514] text-gray-300 hover:text-white transition-colors"
             >
-              Modify Feedstock Specs
+              Change Waste
             </Link>
             <Link
               href="/platform/impact"
               className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-black hover:bg-emerald-400 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
             >
-              <span>Full Audit Report</span>
+              <span>View Impact</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -125,7 +126,7 @@ export default function RecommendationsPage() {
 
         {/* Objective Switcher Bar */}
         <div className="glass-panel p-4 rounded-xl border border-[#1e332f] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-          <span className="text-gray-400 font-medium">Re-score Alternatives with Objective:</span>
+          <span className="text-gray-400 font-medium">Re-score with Objective:</span>
           <div className="flex flex-wrap gap-2">
             {[
               { id: 'balanced', label: 'Balanced' },
@@ -229,14 +230,14 @@ export default function RecommendationsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-bold text-white tracking-wide">
-                Candidate Facilities & Feasibility Comparison
+                Candidate Facilities
               </h3>
               <p className="text-xs text-gray-400">
-                Comparing all regional conversion hubs across Biochar, Biogas, and Carbon Materials
+                Compare feasibility, emissions, and economic return across candidate facilities
               </p>
             </div>
             <span className="text-xs text-gray-400">
-              {result.ranked_candidates.length} Evaluated Facilities
+              {result.ranked_candidates.length} Facilities
             </span>
           </div>
 

@@ -46,6 +46,11 @@ def rank_candidates(
     """
     Normalizes candidate metrics across the cohort and scores them using
     the selected objective weighting profile.
+    
+    Normalization Policy:
+    When a metric has zero differentiation across all feasible candidates (X_max == X_min),
+    the normalized score is deterministically assigned a full baseline of 100.0,
+    ensuring mathematical neutrality without penalizing a single feasible candidate or uniform cohort.
     """
     if not candidates:
         return []
@@ -80,19 +85,19 @@ def rank_candidates(
 
         # 1. Carbon Score (0 - 100)
         if max_carbon == min_carbon:
-            c.carbon_score = 80.0
+            c.carbon_score = 100.0
         else:
             c.carbon_score = round(max(0.0, min(100.0, ((c.net_carbon_impact_tco2e - min_carbon) / (max_carbon - min_carbon + 1e-6)) * 100.0)), 1)
             
         # 2. Economic Score (0 - 100)
         if max_econ == min_econ:
-            c.economic_score = 80.0
+            c.economic_score = 100.0
         else:
             c.economic_score = round(max(0.0, min(100.0, ((c.net_economic_value_inr - min_econ) / (max_econ - min_econ + 1e-6)) * 100.0)), 1)
             
         # 3. Logistics Score (Lower distance -> Higher score)
         if max_dist == min_dist:
-            c.logistics_score = 90.0
+            c.logistics_score = 100.0
         else:
             c.logistics_score = round(max(0.0, min(100.0, ((max_dist - c.distance_km) / (max_dist - min_dist + 1e-6)) * 100.0)), 1)
             
