@@ -56,6 +56,7 @@ export interface CandidateEvaluation {
   
   distance_km: number;
   duration_hrs: number;
+  route_source?: string;
   latitude?: number;
   longitude?: number;
   transport_cost_inr: number;
@@ -106,6 +107,7 @@ export interface OptimizationResult {
   transport_cost_inr: number;
   total_distance_km: number;
   estimated_duration_hrs: number;
+  route_source?: string;
   
   route_geometry: RouteGeometry;
   

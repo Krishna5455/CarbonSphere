@@ -61,10 +61,11 @@ def calculate_carbon_metrics(
         # Avoided landfill / incineration
         gross_avoided = dry_tonnes * 0.90
         
-        # Embodied carbon displacement / mineralized carbon storage in structural matrix
+        # Embodied carbon displacement / fossil polymer & cement clinker displacement
         # Displacement credit ~1.30 tCO2e per tonne composite produced
         composite_tonnes = dry_tonnes * float(facility.get("byproduct_yield_factor", 0.65))
-        permanent_sequestration = composite_tonnes * 1.30
+        avoided_fossil_displacement = composite_tonnes * 1.30
+        permanent_sequestration = 0.0
         
     net_carbon_impact = (
         gross_avoided

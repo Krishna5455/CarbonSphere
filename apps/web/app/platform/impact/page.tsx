@@ -7,7 +7,7 @@ import DisclaimerBanner from '@/components/DisclaimerBanner';
 import { OptimizationResult, WasteStreamInput } from '@/lib/types';
 import { getCurrentRun, saveCurrentRun } from '@/lib/store';
 import { analyzeWasteStream } from '@/lib/api';
-import { BarChart3, FileSpreadsheet, Download, Leaf, DollarSign } from 'lucide-react';
+import { BarChart3, FileSpreadsheet, Download, Leaf, DollarSign, ArrowRight, RefreshCw, Layers } from 'lucide-react';
 
 const DEFAULT_WASTE: WasteStreamInput = {
   title: '25 Tonnes Agricultural Bagasse & Crop Residue',
@@ -57,8 +57,9 @@ export default function ImpactPage() {
     return (
       <div className="min-h-screen bg-[#080c0b] text-white flex flex-col">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-gray-400 text-sm font-mono animate-pulse">Generating Audit Trail...</p>
+        <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+          <RefreshCw className="w-8 h-8 animate-spin text-emerald-400" />
+          <p className="text-sm text-gray-400 font-mono">Calculating Impact...</p>
         </div>
       </div>
     );
@@ -70,23 +71,29 @@ export default function ImpactPage() {
     <div className="min-h-screen bg-[#080c0b] text-[#f1f5f4] flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Title */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1e332f] pb-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <BarChart3 className="w-3.5 h-3.5" />
-              <span>Step 4: Impact Ledger</span>
+              <span>Step 4</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Carbon & Economic Impact
+              Estimated Impact
             </h1>
-            <p className="text-xs text-gray-400 mt-1">
-              Impact ledger for {waste.quantity_tonnes}t {waste.waste_type} to {result.recommended_facility_name}
+            <p className="text-sm text-gray-400">
+              Summary for {waste.quantity_tonnes}t {waste.waste_type}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/platform/routes"
+              className="px-3.5 py-2 rounded-xl text-xs font-medium border border-[#1e332f] bg-[#0e1514] text-gray-300 hover:text-white transition-colors"
+            >
+              ← Route
+            </Link>
             <button
               onClick={() => window.print()}
               className="px-3.5 py-2 rounded-xl text-xs font-medium border border-[#1e332f] bg-[#0e1514] text-gray-300 hover:text-white flex items-center gap-2 transition-colors"
@@ -94,25 +101,73 @@ export default function ImpactPage() {
               <Download className="w-3.5 h-3.5" />
               <span>Export PDF</span>
             </button>
-            <Link
-              href="/platform/recommendations"
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-black hover:bg-emerald-400 transition-colors"
-            >
-              Recommendations
-            </Link>
+          </div>
+        </div>
+
+        {/* Hero: 3 Key Numbers */}
+        <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-[#0e1715] to-[#080c0b] shadow-xl space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-5">
+            <div className="space-y-1">
+              <div className="text-xs font-mono uppercase tracking-widest text-emerald-400">
+                Analysis Result
+              </div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-tight">
+                {result.recommended_pathway.replace('_', ' ')}
+              </div>
+              <div className="text-sm text-gray-400">
+                via <span className="text-white font-semibold">{result.recommended_facility_name}</span>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 font-mono">
+              {waste.generator_name}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-xl bg-[#121c19] border border-[#1e332f] text-center">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mb-2">
+                <Layers className="w-3.5 h-3.5" />
+                <span>Waste Diverted</span>
+              </div>
+              <div className="text-3xl font-extrabold font-mono text-white">
+                {waste.quantity_tonnes}
+                <span className="text-sm text-gray-500 font-normal ml-1">tonnes</span>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-xl bg-[#121c19] border border-emerald-500/30 text-center">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mb-2">
+                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Estimated Carbon Impact</span>
+              </div>
+              <div className="text-3xl font-extrabold font-mono text-emerald-400">
+                +{result.net_carbon_impact_tco2e.toFixed(1)}
+                <span className="text-sm text-gray-500 font-normal ml-1">tCO₂e</span>
+              </div>
+            </div>
+
+            <div className="p-5 rounded-xl bg-[#121c19] border border-amber-500/30 text-center">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mb-2">
+                <DollarSign className="w-3.5 h-3.5 text-amber-400" />
+                <span>Economic Value</span>
+              </div>
+              <div className="text-3xl font-extrabold font-mono text-amber-300">
+                ₹{result.net_economic_value_inr.toLocaleString()}
+              </div>
+            </div>
           </div>
         </div>
 
         <DisclaimerBanner />
 
-        {/* Ledger Grid: Carbon Ledger & Economic Ledger */}
+        {/* Detailed Breakdown: Carbon + Economic */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Carbon Accounting Balance Sheet */}
+          {/* Carbon Breakdown */}
           <div className="glass-panel p-6 rounded-2xl border border-emerald-500/30 space-y-4">
             <div className="flex items-center justify-between border-b border-[#1e332f] pb-3">
               <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                 <Leaf className="w-4 h-4" />
-                Carbon Abatement Balance
+                Carbon Breakdown
               </h3>
               <span className="text-[10px] text-gray-400 font-mono">tCO₂e</span>
             </div>
@@ -133,7 +188,7 @@ export default function ImpactPage() {
                 <div className="flex justify-between items-center p-3 rounded-lg bg-[#121c19] border border-sky-500/30">
                   <div>
                     <div className="font-semibold text-sky-300">Fossil Fuel Displacement</div>
-                    <div className="text-[10px] text-gray-400">Compressed biomethane replacing fossil gas</div>
+                    <div className="text-[10px] text-gray-400">Biomethane replacing fossil gas</div>
                   </div>
                   <div className="text-base font-bold font-mono text-sky-400">
                     +{(winner ? winner.avoided_fossil_displacement_tco2e : result.avoided_fossil_displacement_tco2e).toFixed(2)}
@@ -158,7 +213,7 @@ export default function ImpactPage() {
                 <div className="flex justify-between items-center p-3 rounded-lg bg-[#121c19] border border-[#1e332f]">
                   <div>
                     <div className="font-semibold text-white">Process Emissions</div>
-                    <div className="text-[10px] text-gray-400">Facility thermal and electrical power</div>
+                    <div className="text-[10px] text-gray-400">Facility energy consumption</div>
                   </div>
                   <div className="text-base font-bold font-mono text-amber-400">
                     -{winner.process_emissions_tco2e.toFixed(2)}
@@ -182,7 +237,7 @@ export default function ImpactPage() {
               <div className="flex justify-between items-center p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/50 mt-4">
                 <div>
                   <div className="font-extrabold text-sm text-white">Net Carbon Impact</div>
-                  <div className="text-[10px] text-emerald-300">Net avoided emissions</div>
+                  <div className="text-[10px] text-emerald-300">Total avoided emissions</div>
                 </div>
                 <div className="text-xl font-extrabold font-mono text-emerald-300">
                   +{result.net_carbon_impact_tco2e.toFixed(2)} tCO₂e
@@ -191,12 +246,12 @@ export default function ImpactPage() {
             </div>
           </div>
 
-          {/* Economic Balance Sheet */}
+          {/* Economic Breakdown */}
           <div className="glass-panel p-6 rounded-2xl border border-amber-500/30 space-y-4">
             <div className="flex items-center justify-between border-b border-[#1e332f] pb-3">
               <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
-                Economic Value
+                Economic Breakdown
               </h3>
               <span className="text-[10px] text-gray-400 font-mono">INR (₹)</span>
             </div>
@@ -219,7 +274,7 @@ export default function ImpactPage() {
               {winner && (
                 <div className="flex justify-between items-center p-3 rounded-lg bg-[#121c19] border border-[#1e332f]">
                   <div>
-                    <div className="font-semibold text-white">Feedstock Gate Transaction</div>
+                    <div className="font-semibold text-white">Gate Fee</div>
                     <div className="text-[10px] text-gray-400">
                       {winner.gate_fee_revenue_or_cost_inr >= 0 ? 'Purchase credit' : 'Disposal tipping fee'}
                     </div>
@@ -232,9 +287,9 @@ export default function ImpactPage() {
 
               <div className="flex justify-between items-center p-3 rounded-lg bg-[#121c19] border border-[#1e332f]">
                 <div>
-                  <div className="font-semibold text-white">Freight Logistics</div>
+                  <div className="font-semibold text-white">Transport Cost</div>
                   <div className="text-[10px] text-gray-400">
-                    Hauling over {result.total_distance_km.toFixed(1)} km
+                    {result.total_distance_km.toFixed(1)} km freight
                   </div>
                 </div>
                 <div className="text-base font-bold font-mono text-sky-400">
@@ -242,11 +297,11 @@ export default function ImpactPage() {
                 </div>
               </div>
 
-              {/* Net Circular Margin */}
+              {/* Net Economic Value */}
               <div className="flex justify-between items-center p-4 rounded-xl bg-amber-950/20 border border-amber-500/50 mt-4">
                 <div>
-                  <div className="font-extrabold text-sm text-white">Net Circular Value</div>
-                  <div className="text-[10px] text-amber-300">Net economic benefit across value chain</div>
+                  <div className="font-extrabold text-sm text-white">Net Economic Value</div>
+                  <div className="text-[10px] text-amber-300">Total value across the chain</div>
                 </div>
                 <div className="text-xl font-extrabold font-mono text-amber-300">
                   ₹{result.net_economic_value_inr.toLocaleString()}
@@ -256,10 +311,10 @@ export default function ImpactPage() {
           </div>
         </div>
 
-        {/* Methodology Transparency Table */}
-        <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-4">
-          <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
-            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+        {/* Methodology Reference */}
+        <div className="glass-panel p-5 rounded-2xl border border-[#1e332f] space-y-3">
+          <h3 className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
+            <FileSpreadsheet className="w-3.5 h-3.5 text-gray-400" />
             Emission Factors & Standards
           </h3>
 
@@ -267,39 +322,65 @@ export default function ImpactPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#1e332f] text-gray-400 font-mono text-[11px]">
-                  <th className="py-2.5 px-3">Parameter</th>
-                  <th className="py-2.5 px-3">Value</th>
-                  <th className="py-2.5 px-3">Standard Reference</th>
-                  <th className="py-2.5 px-3">Scope</th>
+                  <th className="py-2 px-3">Parameter</th>
+                  <th className="py-2 px-3">Value</th>
+                  <th className="py-2 px-3">Reference</th>
+                  <th className="py-2 px-3">Scope</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1e332f] text-gray-300">
                 <tr>
-                  <td className="py-2.5 px-3 font-semibold text-white">Heavy-Duty Freight EF</td>
-                  <td className="py-2.5 px-3 font-mono text-emerald-400">0.096 kg CO₂e / t·km</td>
-                  <td className="py-2.5 px-3 text-gray-400">GLEC Framework v3.0</td>
-                  <td className="py-2.5 px-3">Highway freight haulage</td>
+                  <td className="py-2 px-3 font-semibold text-white">Heavy-Duty Freight EF</td>
+                  <td className="py-2 px-3 font-mono text-emerald-400">0.096 kg CO₂e / t·km</td>
+                  <td className="py-2 px-3 text-gray-400">GLEC Framework v3.0</td>
+                  <td className="py-2 px-3">Highway freight</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 px-3 font-semibold text-white">Landfill Methane FOD</td>
-                  <td className="py-2.5 px-3 font-mono text-emerald-400">0.85 tCO₂e / wet tonne</td>
-                  <td className="py-2.5 px-3 text-gray-400">IPCC Guidelines Vol. 5</td>
-                  <td className="py-2.5 px-3">Avoided landfill methane</td>
+                  <td className="py-2 px-3 font-semibold text-white">Landfill Methane FOD</td>
+                  <td className="py-2 px-3 font-mono text-emerald-400">0.85 tCO₂e / wet tonne</td>
+                  <td className="py-2 px-3 text-gray-400">IPCC Guidelines Vol. 5</td>
+                  <td className="py-2 px-3">Avoided methane</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 px-3 font-semibold text-white">Biochar Fixed Carbon</td>
-                  <td className="py-2.5 px-3 font-mono text-emerald-400">78% C, 80% 100-yr</td>
-                  <td className="py-2.5 px-3 text-gray-400">European Biochar Certificate (EBC)</td>
-                  <td className="py-2.5 px-3">Soil carbon storage</td>
+                  <td className="py-2 px-3 font-semibold text-white">Biochar Fixed Carbon</td>
+                  <td className="py-2 px-3 font-mono text-emerald-400">78% C, 80% 100-yr</td>
+                  <td className="py-2 px-3 text-gray-400">European Biochar Certificate</td>
+                  <td className="py-2 px-3">Soil carbon storage</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 px-3 font-semibold text-white">Biomethane Displacement</td>
-                  <td className="py-2.5 px-3 font-mono text-emerald-400">2.2 kg CO₂e / kg CBG</td>
-                  <td className="py-2.5 px-3 text-gray-400">MNRE (SATAT)</td>
-                  <td className="py-2.5 px-3">Fossil natural gas displacement</td>
+                  <td className="py-2 px-3 font-semibold text-white">Biomethane Displacement</td>
+                  <td className="py-2 px-3 font-mono text-emerald-400">2.2 kg CO₂e / kg CBG</td>
+                  <td className="py-2 px-3 text-gray-400">MNRE (SATAT)</td>
+                  <td className="py-2 px-3">Fossil gas displacement</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        {/* Next Actions */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-[#1e332f]">
+          <Link
+            href="/platform/routes"
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            ← Back to Route
+          </Link>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Link
+              href="/platform"
+              className="px-4 py-2.5 rounded-xl text-xs font-medium border border-[#1e332f] bg-[#0e1514] text-gray-300 hover:text-white transition-colors"
+            >
+              Overview
+            </Link>
+            <Link
+              href="/platform/waste"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95"
+            >
+              <span>New Analysis</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </main>

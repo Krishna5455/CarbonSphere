@@ -44,7 +44,7 @@ export async function fetchRoute(
   originLon: number,
   destLat: number,
   destLon: number
-): Promise<{ distance_km: number; duration_hrs: number; geometry: { type: string; coordinates: [number, number][] } }> {
+): Promise<{ distance_km: number; duration_hrs: number; geometry: { type: string; coordinates: [number, number][] }; source?: string }> {
   const url = new URL(`${API_BASE_URL}/api/route`);
   url.searchParams.append('origin_lat', originLat.toString());
   url.searchParams.append('origin_lon', originLon.toString());

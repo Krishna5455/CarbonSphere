@@ -29,7 +29,9 @@ def calculate_economic_metrics(
     yield_factor = float(facility.get("byproduct_yield_factor", 0.30))
     market_price = float(facility.get("byproduct_market_price", 20000.0))
     
-    if pathway == PathwayType.BIOCHAR:
+    # Dry matter based conversion for solid lignocellulose/cellulose (biochar & composites)
+    # Wet basis conversion for anaerobic slurry digestion (biogas)
+    if pathway in (PathwayType.BIOCHAR, PathwayType.CARBON_MATERIALS):
         dry_matter = max(0.05, 1.0 - (waste.moisture_pct / 100.0))
         byproduct_tonnes = quantity * dry_matter * yield_factor
     else:
@@ -39,7 +41,7 @@ def calculate_economic_metrics(
     
     # 4. Circular Net Value
     # (Byproduct creation value + gate fee transaction - logistics cost - processing estimate)
-    # Processing operating expense is roughly 35% of product gross value
+    # Processing operating expense is modeled as 35% of product gross value
     estimated_opex = byproduct_market_value * 0.35
     net_economic_value = byproduct_market_value + gate_fee_total - transport_cost - estimated_opex
     

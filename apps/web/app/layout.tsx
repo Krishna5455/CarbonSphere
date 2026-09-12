@@ -28,12 +28,6 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-[#080c0b] text-[#f1f5f4] selection:bg-emerald-500/30 selection:text-emerald-300">
         {children}
       </body>

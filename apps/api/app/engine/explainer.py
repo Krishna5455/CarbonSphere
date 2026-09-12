@@ -11,11 +11,19 @@ def generate_explanation(
     Synthesizes explicit, rule-traceable explanations for the recommended decision.
     """
     pathway_title = winner.pathway.value.replace("_", " ").title()
-    summary = (
-        f"{winner.facility_name} ({pathway_title}) is recommended under the "
-        f"'{objective.value.replace('_', ' ').title()}' objective. It delivers {winner.net_carbon_impact_tco2e:.1f} tCO2e "
-        f"net carbon abatement and ₹{winner.net_economic_value_inr:,.0f} net circular value over a {winner.distance_km:.1f} km transit route."
-    )
+    
+    if not winner.is_feasible:
+        summary = (
+            f"No strictly feasible facility was identified for this feedstock stream. "
+            f"Highest partial compatibility facility: {winner.facility_name} ({pathway_title}). "
+            f"Rejection factors: {'; '.join(winner.rejection_reasons)}."
+        )
+    else:
+        summary = (
+            f"{winner.facility_name} ({pathway_title}) is recommended under the "
+            f"'{objective.value.replace('_', ' ').title()}' objective. It delivers {winner.net_carbon_impact_tco2e:.1f} tCO2e "
+            f"net carbon abatement and ₹{winner.net_economic_value_inr:,.0f} net circular value over a {winner.distance_km:.1f} km transit route."
+        )
     
     details: List[str] = []
     
@@ -33,16 +41,18 @@ def generate_explanation(
     elif winner.pathway.value == "carbon_materials":
         details.append(
             f"Low contamination rate ({waste.contamination_pct:.1f}%) and structural fiber integrity allow high-yield "
-            f"conversion into carbon-negative bio-composites, displacing fossil and cement clinker materials."
+            f"conversion into carbon-negative bio-composites, displacing fossil polymers and cement clinker materials."
         )
         
     # 2. Objective alignment
     if objective == OptimizationObjective.MAX_CARBON:
-        carbon_driver = (
-            f"Permanent biogenic sequestration ({winner.permanent_sequestration_tco2e:.1f} tCO2e)"
-            if winner.permanent_sequestration_tco2e > 0
-            else f"Fossil fuel displacement credit ({winner.avoided_fossil_displacement_tco2e:.1f} tCO2e) and landfill avoidance"
-        )
+        if winner.permanent_sequestration_tco2e > 0:
+            carbon_driver = f"Permanent biogenic sequestration ({winner.permanent_sequestration_tco2e:.1f} tCO2e) and avoided burning ({winner.gross_carbon_avoided_tco2e:.1f} tCO2e)"
+        elif winner.avoided_fossil_displacement_tco2e > 0:
+            carbon_driver = f"Avoided fossil fuel/material displacement ({winner.avoided_fossil_displacement_tco2e:.1f} tCO2e) and landfill methane avoidance ({winner.gross_carbon_avoided_tco2e:.1f} tCO2e)"
+        else:
+            carbon_driver = f"Avoided decomposition emissions ({winner.gross_carbon_avoided_tco2e:.1f} tCO2e)"
+            
         details.append(
             f"Carbon prioritization achieved highest ranking: {carbon_driver} "
             f"substantially outweighs transport logistics emissions ({winner.transport_emissions_tco2e:.2f} tCO2e)."
@@ -50,12 +60,17 @@ def generate_explanation(
     elif objective == OptimizationObjective.MAX_ECONOMIC:
         details.append(
             f"Economic prioritization achieved highest ranking: Byproduct market value (₹{winner.byproduct_market_value_inr:,.0f}) "
-            f"and feedstock purchase fee provide superior commercial margin."
+            f"and feedstock transaction balance provide superior commercial margin."
         )
     elif objective == OptimizationObjective.MIN_LOGISTICS:
         details.append(
             f"Logistics minimization achieved highest ranking: Located {winner.distance_km:.1f} km away with "
             f"transit duration of {winner.duration_hrs:.1f} hrs and freight cost of ₹{winner.transport_cost_inr:,.0f}."
+        )
+    elif objective == OptimizationObjective.MAX_DIVERSION:
+        details.append(
+            f"Waste diversion prioritization achieved highest ranking: Maximizes available facility processing capacity "
+            f"({winner.capacity_score:.0f}% headroom) and high technical compatibility ({winner.compatibility_score:.0f}/100)."
         )
     else:
         details.append(

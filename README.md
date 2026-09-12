@@ -32,10 +32,10 @@ Traditional platforms focus solely on reverse logistics or static waste matching
 ## 🏗️ System Architecture
 
 - **Frontend (`apps/web`)**: Next.js 16 (App Router, TypeScript, Tailwind CSS, Lucide)
-- **Mapping**: MapLibre GL JS + CARTO / OpenStreetMap tiles (100% Free, ₹0 API budget)
+- **Mapping**: MapLibre GL JS + CARTO / OpenStreetMap tiles (Zero-cost demo stack using public CARTO/OSRM services subject to provider usage limits)
 - **Backend API (`apps/api`)**: Python 3.13 + FastAPI + Pydantic v2
 - **Database**: Supabase PostgreSQL 17 + PostGIS spatial indexing (`GEOGRAPHY(POINT, 4326)`)
-- **Routing**: Dual-pipeline OSRM API with resilient geodesic road network fallback
+- **Routing**: OSRM API for road network routing with resilient geodesic distance fallback (estimated distance using 1.25x tortuosity assumption; not turn-by-turn road navigation)
 
 ---
 

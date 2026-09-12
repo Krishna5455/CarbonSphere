@@ -114,4 +114,14 @@ def rank_candidates(
         )
         c.overall_score = round(composite, 1)
 
-    return sorted(candidates, key=lambda x: (x.is_feasible, x.overall_score), reverse=True)
+    # Deterministic multi-factor tie breaking:
+    # 1. Feasibility (True > False)
+    # 2. Overall composite score (Descending)
+    # 3. Feedstock technical compatibility score (Descending)
+    # 4. Logistics transit distance (Ascending -> negative for reverse sort)
+    # 5. Stable facility ID (Ascending)
+    return sorted(
+        candidates,
+        key=lambda x: (x.is_feasible, x.overall_score, x.compatibility_score, -x.distance_km, x.facility_id),
+        reverse=True
+    )

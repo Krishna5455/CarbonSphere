@@ -15,7 +15,7 @@ export default function Navbar() {
   }, [pathname]);
 
   const navItems = [
-    { name: 'Overview', href: '/', icon: Sparkles },
+    { name: 'Overview', href: '/platform', icon: Sparkles },
     { name: 'Waste', href: '/platform/waste', icon: Layers },
     { name: 'Recommendations', href: '/platform/recommendations', icon: Compass },
     { name: 'Routes', href: '/platform/routes', icon: MapPin },

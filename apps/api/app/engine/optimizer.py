@@ -189,6 +189,8 @@ async def optimize_pathway(
         else:
             trade_offs.extend(rejection_reasons)
             
+        r_source = r.get("source", "osrm")
+        
         cand = CandidateEvaluation(
             facility_id=fid,
             facility_name=f["name"],
@@ -201,6 +203,7 @@ async def optimize_pathway(
             longitude=float(f.get("longitude", 0.0)),
             distance_km=dist_km,
             duration_hrs=dur_hrs,
+            route_source=r_source,
             transport_cost_inr=econ_data["transport_cost_inr"],
             transport_emissions_tco2e=carbon_data["transport_emissions_tco2e"],
             gross_carbon_avoided_tco2e=carbon_data["gross_carbon_avoided_tco2e"],
@@ -247,6 +250,7 @@ async def optimize_pathway(
         transport_cost_inr=winner.transport_cost_inr,
         total_distance_km=winner.distance_km,
         estimated_duration_hrs=winner.duration_hrs,
+        route_source=winner.route_source,
         route_geometry=RouteGeometry(**winning_route["geometry"]),
         why_recommended=why_summary,
         detailed_explanation=detailed_expl,

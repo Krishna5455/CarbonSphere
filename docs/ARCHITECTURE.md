@@ -49,3 +49,16 @@ Waste Input ──> Pathway Feasibility ──> Carbon & Economic Ledger ──>
 
 5. **Multi-Criteria Decision Analysis (`apps/api/app/engine/mcda.py`)**:
    Vector-normalized linear scoring across 5 weighted dimensions (Carbon Abatement, Economic Value, Logistics Distance, Feedstock Compatibility, Capacity Headroom).
+
+---
+
+## Map & Routing Infrastructure
+
+CarbonSphere incorporates a zero-cost demo/development spatial visualization and routing stack using public CARTO and OSRM services subject to provider usage limits:
+
+- **Map Rendering**: Powered by **MapLibre GL JS** (`maplibre-gl`), rendering vector tile styles client-side without proprietary map service locks or usage fees.
+- **Tile & Style Provider**: Default vector tile style provided by **CARTO Dark Matter GL** (`https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json`), based on **OpenStreetMap** geographic data. Configurable via `NEXT_PUBLIC_MAP_STYLE_URL`.
+- **Road Network Routing**: Driven by **OSRM (Open Source Routing Machine)** for actual road network routing (distance, duration, turn-by-turn geometry). Configurable via `OSRM_ENDPOINT` (defaults to `https://router.project-osrm.org`).
+- **Geodesic Fallback**: Automatic offline fallback to Haversine geodesic calculation with a $1.25\times$ highway tortuosity engineering assumption if OSRM service is unreachable or encounters an unroutable path. Geodesic fallback provides estimated distance and straight-line geometry for decision scoring; it is NOT turn-by-turn road navigation.
+- **Attribution**: Explicit, legally compliant visual attribution credited to OpenStreetMap contributors, CARTO, and OSRM.
+

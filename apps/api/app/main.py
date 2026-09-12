@@ -132,10 +132,10 @@ async def analyze_waste(
 @app.get("/api/route")
 @app.post("/api/route")
 async def calculate_route(
-    origin_lat: float = Query(...),
-    origin_lon: float = Query(...),
-    dest_lat: float = Query(...),
-    dest_lon: float = Query(...)
+    origin_lat: float = Query(..., ge=-90.0, le=90.0),
+    origin_lon: float = Query(..., ge=-180.0, le=180.0),
+    dest_lat: float = Query(..., ge=-90.0, le=90.0),
+    dest_lon: float = Query(..., ge=-180.0, le=180.0)
 ):
-    """Calculates route distance, duration, and GeoJSON geometry."""
+    """Calculates route distance, duration, and GeoJSON geometry with coordinate validation."""
     return await get_route(origin_lat, origin_lon, dest_lat, dest_lon)

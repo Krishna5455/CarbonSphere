@@ -22,19 +22,19 @@ class OptimizationObjective(str, Enum):
     MAX_DIVERSION = "max_diversion"
 
 class WasteStreamInput(BaseModel):
-    title: str = Field(...)
-    generator_name: str = Field(...)
-    waste_type: str = Field(...)
+    title: str = Field(..., min_length=1, max_length=200)
+    generator_name: str = Field(..., min_length=1, max_length=200)
+    waste_type: str = Field(..., min_length=1, max_length=200)
     feedstock_category: Optional[FeedstockCategory] = Field(default=None)
-    quantity_tonnes: float = Field(..., gt=0)
-    moisture_pct: float = Field(..., ge=0, le=100)
-    ash_pct: float = Field(default=4.2, ge=0, le=100)
-    carbon_nitrogen_ratio: Optional[float] = Field(default=45.0)
-    energy_density_mj_kg: Optional[float] = Field(default=16.8)
-    contamination_pct: float = Field(default=1.5, ge=0, le=100)
-    location_name: str = Field(...)
-    latitude: float = Field(..., ge=-90, le=90)
-    longitude: float = Field(..., ge=-180, le=180)
+    quantity_tonnes: float = Field(..., gt=0, le=1000000.0)
+    moisture_pct: float = Field(..., ge=0.0, le=100.0)
+    ash_pct: float = Field(default=4.2, ge=0.0, le=100.0)
+    carbon_nitrogen_ratio: Optional[float] = Field(default=45.0, ge=0.0, le=500.0)
+    energy_density_mj_kg: Optional[float] = Field(default=16.8, ge=0.0, le=100.0)
+    contamination_pct: float = Field(default=1.5, ge=0.0, le=100.0)
+    location_name: str = Field(..., min_length=1, max_length=200)
+    latitude: float = Field(..., ge=-90.0, le=90.0)
+    longitude: float = Field(..., ge=-180.0, le=180.0)
 
 class FacilityResponse(BaseModel):
     id: str
@@ -71,6 +71,7 @@ class CandidateEvaluation(BaseModel):
     longitude: float = 0.0
     distance_km: float = 0.0
     duration_hrs: float = 0.0
+    route_source: Optional[str] = "osrm"
     transport_cost_inr: float = 0.0
     transport_emissions_tco2e: float = 0.0
     
@@ -123,6 +124,7 @@ class OptimizationResult(BaseModel):
     transport_cost_inr: float
     total_distance_km: float
     estimated_duration_hrs: float
+    route_source: Optional[str] = "osrm"
     
     # Route
     route_geometry: RouteGeometry

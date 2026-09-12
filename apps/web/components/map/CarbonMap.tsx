@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { Facility, CandidateEvaluation, PathwayType } from '@/lib/types';
 
 interface CarbonMapProps {
@@ -18,6 +19,49 @@ interface CarbonMapProps {
     coordinates: [number, number][];
   };
   className?: string;
+}
+
+function getCartoDarkStyle(): string | maplibregl.StyleSpecification {
+  const customUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
+  const apiKey = process.env.NEXT_PUBLIC_CARTO_API_KEY ? process.env.NEXT_PUBLIC_CARTO_API_KEY.trim() : '';
+
+  if (customUrl) {
+    if (apiKey && !customUrl.includes('key=')) {
+      const delimiter = customUrl.includes('?') ? '&' : '?';
+      return `${customUrl}${delimiter}key=${encodeURIComponent(apiKey)}`;
+    }
+    return customUrl;
+  }
+
+  const keyParam = apiKey ? `?key=${encodeURIComponent(apiKey)}` : '';
+  const tiles = [
+    `https://a.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png${keyParam}`,
+    `https://b.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png${keyParam}`,
+    `https://c.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png${keyParam}`,
+    `https://d.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png${keyParam}`
+  ];
+
+  return {
+    version: 8,
+    name: 'CARTO Dark Matter',
+    sources: {
+      'carto-dark': {
+        type: 'raster',
+        tiles: tiles,
+        tileSize: 256,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+      }
+    },
+    layers: [
+      {
+        id: 'carto-dark-layer',
+        type: 'raster',
+        source: 'carto-dark',
+        minzoom: 0,
+        maxzoom: 20
+      }
+    ]
+  };
 }
 
 export default function CarbonMap({
@@ -38,21 +82,39 @@ export default function CarbonMap({
 
     const initialLat = origin ? origin.lat : 18.5204;
     const initialLon = origin ? origin.lon : 73.8567;
+    const mapStyle = getCartoDarkStyle();
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      style: mapStyle,
       center: [initialLon, initialLat],
       zoom: 7.8,
       attributionControl: false
     });
 
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
-
-    map.on('load', () => {
-      setMapLoaded(true);
+    map.on('error', (e) => {
+      console.warn('Notice: MapLibre tile/style notice:', e);
     });
+
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
+    map.addControl(
+      new maplibregl.AttributionControl({
+        compact: false,
+        customAttribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a> · <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a>'
+      }),
+      'bottom-right'
+    );
+
+    const handleLoad = () => {
+      setMapLoaded(true);
+      map.resize();
+    };
+
+    if (map.isStyleLoaded() || map.loaded()) {
+      handleLoad();
+    } else {
+      map.on('load', handleLoad);
+    }
 
     mapInstance.current = map;
 
@@ -173,63 +235,76 @@ export default function CarbonMap({
     });
 
     // 3. Render Route Layer
-    if (map.getSource('optimized-route')) {
-      (map.getSource('optimized-route') as maplibregl.GeoJSONSource).setData({
-        type: 'Feature',
-        properties: {},
-        geometry: routeGeometry ? (routeGeometry as any) : { type: 'LineString', coordinates: [] }
+    if (routeGeometry && routeGeometry.coordinates && routeGeometry.coordinates.length > 0) {
+      routeGeometry.coordinates.forEach((coord) => {
+        bounds.extend([coord[0], coord[1]]);
       });
-    } else if (routeGeometry && routeGeometry.coordinates.length > 0) {
-      map.addSource('optimized-route', {
-        type: 'geojson',
-        data: {
+
+      if (map.getSource('optimized-route')) {
+        (map.getSource('optimized-route') as maplibregl.GeoJSONSource).setData({
           type: 'Feature',
           properties: {},
           geometry: routeGeometry as any
-        }
-      });
+        });
+      } else {
+        map.addSource('optimized-route', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: routeGeometry as any
+          }
+        });
 
-      // Glow casing layer
-      map.addLayer({
-        id: 'route-glow',
-        type: 'line',
-        source: 'optimized-route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#10b981',
-          'line-width': 8,
-          'line-opacity': 0.35,
-          'line-blur': 4
-        }
-      });
+        // Glow casing layer
+        map.addLayer({
+          id: 'route-glow',
+          type: 'line',
+          source: 'optimized-route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#10b981',
+            'line-width': 8,
+            'line-opacity': 0.35,
+            'line-blur': 4
+          }
+        });
 
-      // Inner crisp line layer
-      map.addLayer({
-        id: 'route-line',
-        type: 'line',
-        source: 'optimized-route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#34d399',
-          'line-width': 3.5,
-          'line-opacity': 0.95
-        }
+        // Inner crisp line layer
+        map.addLayer({
+          id: 'route-line',
+          type: 'line',
+          source: 'optimized-route',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#34d399',
+            'line-width': 3.5,
+            'line-opacity': 0.95
+          }
+        });
+      }
+    } else if (map.getSource('optimized-route')) {
+      (map.getSource('optimized-route') as maplibregl.GeoJSONSource).setData({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: [] }
       });
     }
 
-    // Adjust camera bounds to fit markers nicely
+    // Adjust camera bounds to fit markers and route nicely
     if (!bounds.isEmpty()) {
       map.fitBounds(bounds, {
         padding: { top: 60, bottom: 60, left: 60, right: 60 },
         maxZoom: 12,
-        duration: 1000
+        duration: 800
       });
+      map.resize();
     }
   }, [mapLoaded, origin, facilities, recommendedId, routeGeometry]);
 

@@ -3,45 +3,93 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '@/components/Navbar';
 import DisclaimerBanner from '@/components/DisclaimerBanner';
-import { Sparkles, ArrowRight, Flame, Droplets, Box, Compass, Truck, BarChart3, Layers, CheckCircle2, ShieldCheck, ChevronRight } from 'lucide-react';
+import { FadeIn } from '@/components/motion/MotionWrapper';
+import {
+  Sparkles, ArrowRight, Flame, Droplets, Box, Compass,
+  Truck, BarChart3, Layers, CheckCircle2, Building2, MapPin, ChevronRight
+} from 'lucide-react';
 import { analyzeWasteStream } from '@/lib/api';
 import { saveCurrentRun } from '@/lib/store';
 import { WasteStreamInput } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const FIVE_STEP_FLOW = [
+  { step: '01', name: 'Waste Stream', desc: 'Feedstock profiling & moisture analysis', icon: Layers, href: '/platform/waste' },
+  { step: '02', name: 'Pathway Match', desc: 'Thermodynamic conversion feasibility', icon: Compass, href: '/platform/recommendations' },
+  { step: '03', name: 'Facility Choice', desc: 'Capacity headroom & gate fees', icon: Building2, href: '/platform/recommendations' },
+  { step: '04', name: 'Freight Route', desc: 'OSRM driving distance & logistics', icon: MapPin, href: '/platform/routes' },
+  { step: '05', name: 'Impact Ledger', desc: 'Net carbon abatement & circular margin', icon: BarChart3, href: '/platform/impact' },
+];
+
 export default function HomePage() {
   const router = useRouter();
   const heroRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const cardGridRef = useRef<HTMLDivElement>(null);
+  const flowContainerRef = useRef<HTMLDivElement>(null);
+  const pillarsRef = useRef<HTMLDivElement>(null);
 
   const [activeWasteType, setActiveWasteType] = useState('agri');
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(titleRef.current, {
+      // Hero section reveal timeline
+      gsap.from('.hero-badge-elem', {
         opacity: 0,
-        y: 30,
-        duration: 0.9,
-        ease: 'power3.out'
-      });
-      gsap.from(subtitleRef.current, {
-        opacity: 0,
-        y: 20,
-        duration: 0.9,
-        delay: 0.2,
-        ease: 'power3.out'
-      });
-      gsap.from('.hero-badge', {
-        opacity: 0,
-        scale: 0.9,
+        y: -15,
         duration: 0.6,
-        ease: 'back.out(1.7)'
+        ease: 'power3.out'
       });
+      gsap.from('.hero-title-elem', {
+        opacity: 0,
+        y: 25,
+        duration: 0.8,
+        delay: 0.15,
+        ease: 'power3.out'
+      });
+      gsap.from('.hero-sub-elem', {
+        opacity: 0,
+        y: 15,
+        duration: 0.7,
+        delay: 0.3,
+        ease: 'power3.out'
+      });
+
+      // ScrollTrigger for 5-Step Flow
+      if (flowContainerRef.current) {
+        gsap.from('.flow-step-card', {
+          scrollTrigger: {
+            trigger: flowContainerRef.current,
+            start: 'top 80%',
+          },
+          opacity: 0,
+          y: 30,
+          stagger: 0.12,
+          duration: 0.6,
+          ease: 'power2.out'
+        });
+      }
+
+      // ScrollTrigger for Pillars
+      if (pillarsRef.current) {
+        gsap.from('.pillar-card', {
+          scrollTrigger: {
+            trigger: pillarsRef.current,
+            start: 'top 80%',
+          },
+          opacity: 0,
+          y: 25,
+          stagger: 0.15,
+          duration: 0.6,
+          ease: 'power2.out'
+        });
+      }
     }, heroRef);
 
     return () => ctx.revert();
@@ -112,81 +160,64 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080c0b] text-[#f1f5f4] flex flex-col selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className="min-h-screen bg-[#060908] text-[#f3f7f6] flex flex-col selection:bg-emerald-500/30 selection:text-emerald-300">
       <Navbar />
 
-      {/* Atmospheric Glow Backdrops */}
+      {/* Subtle Restrained Ambient Glow */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px]" />
-        <div className="absolute top-1/2 -left-40 w-[450px] h-[450px] bg-teal-500/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-10 right-0 w-[550px] h-[550px] bg-emerald-700/5 rounded-full blur-[150px]" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-emerald-500/8 rounded-full blur-[140px]" />
       </div>
 
       <main className="relative z-10 flex-1 flex flex-col space-y-24 py-12 md:py-20">
         {/* HERO SECTION */}
         <section ref={heroRef} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 shadow-lg shadow-emerald-500/10">
+          <div className="hero-badge-elem inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Waste Pathway Optimization Platform</span>
+            <span>Carbon-Aware Waste Pathway Optimization</span>
           </div>
 
           <div className="space-y-4 max-w-4xl mx-auto">
-            <h1
-              ref={titleRef}
-              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]"
-            >
-              Don't optimize waste disposal.{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-                Optimize waste utilization.
-              </span>
+            <h1 className="hero-title-elem text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+              What should your waste become?
             </h1>
 
-            <p
-              ref={subtitleRef}
-              className="text-base sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed pt-2"
-            >
-              Match any waste stream with the highest-value circular pathway, compatible regional facility, route, and carbon/economic return.
+            <p className="hero-sub-elem text-base sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed pt-1">
+              CarbonSphere pairs thermodynamic feedstock profiling with multi-criteria optimization to find the highest-value circular pathway, compatible facility, and route.
             </p>
           </div>
 
-          {/* Quick Action CTA */}
+          {/* Primary Product CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            <Link
-              href="/platform/waste"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm transition-all shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>Launch Optimizer</span>
+            <Link href="/platform/waste" className="cs-button-primary w-full sm:w-auto">
+              <span>Start Waste Analysis</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <Link
-              href="/demo"
-              className="w-full sm:w-auto px-7 py-4 rounded-xl glass-panel hover:bg-white/10 text-white font-medium text-sm transition-all border border-[#1e332f] flex items-center justify-center gap-2"
-            >
+            <Link href="/demo" className="cs-button-secondary w-full sm:w-auto">
               <span>Demo Benchmarks</span>
               <ChevronRight className="w-4 h-4 text-emerald-400" />
             </Link>
           </div>
 
-          {/* Live Interactive Valorization Preview */}
-          <div className="pt-10 max-w-4xl mx-auto">
-            <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-emerald-500/30 text-left space-y-6 shadow-2xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1e332f] pb-4">
+          {/* Interactive Optimization Engine Preview */}
+          <div className="pt-8 max-w-4xl mx-auto">
+            <div className="cs-card p-6 sm:p-8 text-left space-y-6 shadow-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#182a25] pb-4">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <Layers className="w-4 h-4 text-emerald-400" />
-                    Quick Pathway Preview
+                    Interactive Pathway Engine
                   </h3>
                   <p className="text-xs text-gray-400">
-                    Select a waste stream to preview pathway matching
+                    Select a waste feedstock profile to evaluate pathway compatibility
                   </p>
                 </div>
-                <span className="text-[10px] px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono self-start sm:self-auto">
+                <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 font-mono self-start sm:self-auto border border-emerald-500/30">
                   Engine Ready
                 </span>
               </div>
 
-              {/* Stream Switcher Tabs */}
+              {/* Feedstock Switcher */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
                   { id: 'agri', title: '25t Agri Bagasse', type: 'Pyrolysis Match', icon: Flame, color: 'text-amber-400' },
@@ -194,14 +225,15 @@ export default function HomePage() {
                   { id: 'fiber', title: '15t Cellulosic Fiber', type: 'Composite Match', icon: Box, color: 'text-purple-400' }
                 ].map((t) => {
                   const Icon = t.icon;
+                  const isActive = activeWasteType === t.id;
                   return (
                     <button
                       key={t.id}
                       onClick={() => setActiveWasteType(t.id)}
                       className={`p-3.5 rounded-xl border text-left transition-all ${
-                        activeWasteType === t.id
-                          ? 'bg-emerald-500/20 border-emerald-400 text-white'
-                          : 'bg-[#121c19] border-[#1e332f] text-gray-400 hover:border-gray-600'
+                        isActive
+                          ? 'bg-emerald-500/15 border-emerald-400 text-white shadow-md'
+                          : 'bg-[#0f1715] border-[#182a25] text-gray-400 hover:border-gray-600'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -214,16 +246,16 @@ export default function HomePage() {
                 })}
               </div>
 
-              {/* Dynamic Pathway Flow Diagram */}
-              <div className="p-4 rounded-2xl bg-[#090f0e] border border-[#1e332f] flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+              {/* Decision Flow Pipeline Bar */}
+              <div className="p-4 rounded-2xl bg-[#090f0d] border border-[#182a25] flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
                     1
                   </div>
                   <div>
-                    <div className="text-gray-400 text-[10px] uppercase">Input Waste</div>
+                    <div className="text-gray-400 text-[10px] uppercase font-semibold">Feedstock Input</div>
                     <div className="text-white font-semibold">
-                      {activeWasteType === 'agri' ? '25t Sugarcane Bagasse (14.5% Moisture)' : activeWasteType === 'food' ? '40t Organic Sludge (82% Moisture)' : '15t Industrial Fibers (9% Moisture)'}
+                      {activeWasteType === 'agri' ? '25t Bagasse (14.5% Moisture)' : activeWasteType === 'food' ? '40t Food Sludge (82% Moisture)' : '15t Cellulosic Scrap (9% Moisture)'}
                     </div>
                   </div>
                 </div>
@@ -235,7 +267,7 @@ export default function HomePage() {
                     2
                   </div>
                   <div>
-                    <div className="text-gray-400 text-[10px] uppercase">Pathway</div>
+                    <div className="text-gray-400 text-[10px] uppercase font-semibold">Optimal Pathway</div>
                     <div className="text-emerald-300 font-semibold capitalize">
                       {activeWasteType === 'agri' ? 'Biochar Pyrolysis' : activeWasteType === 'food' ? 'Biogas Digestion' : 'Carbon-Negative Materials'}
                     </div>
@@ -249,7 +281,7 @@ export default function HomePage() {
                     3
                   </div>
                   <div>
-                    <div className="text-gray-400 text-[10px] uppercase">Estimated Impact</div>
+                    <div className="text-gray-400 text-[10px] uppercase font-semibold">Estimated Net Impact</div>
                     <div className="text-white font-semibold">
                       {activeWasteType === 'agri' ? '+39.0 tCO₂e Net Abatement' : activeWasteType === 'food' ? '+38.7 tCO₂e Net Abatement' : '+25.9 tCO₂e Net Abatement'}
                     </div>
@@ -261,58 +293,106 @@ export default function HomePage() {
                   disabled={isOptimizing}
                   className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs transition-all shadow-md shrink-0 disabled:opacity-50"
                 >
-                  {isOptimizing ? 'Optimizing...' : 'View Full Solution'}
+                  {isOptimizing ? 'Evaluating...' : 'Run Scenario'}
                 </button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CORE PILLARS SECTION */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* 5-STEP DECISION CHAIN (GSAP ScrollTrigger Reveal) */}
+        <section ref={flowContainerRef} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Circular Utilization Pathways
+              End-to-End Decision Chain
             </h2>
             <p className="text-xs sm:text-sm text-gray-400">
-              Evaluate feedstocks across three primary utilization pathways
+              How CarbonSphere transforms raw waste parameters into an operational pathway recommendation
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            {FIVE_STEP_FLOW.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.step}
+                  href={item.href}
+                  className="flow-step-card cs-card-interactive p-5 flex flex-col justify-between space-y-4 group"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-gray-400 group-hover:text-emerald-400 transition-colors">
+                      <span className="text-xs font-mono font-bold text-emerald-400/80">
+                        {item.step}
+                      </span>
+                      <Icon className="w-4 h-4" />
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
+                        {item.name}
+                      </h3>
+                      <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center gap-1 text-[11px] font-medium text-emerald-400/80 group-hover:text-emerald-300 transition-colors">
+                    <span>Explore</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* CORE PILLARS SECTION */}
+        <section ref={pillarsRef} className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Supported Conversion Pathways
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-400">
+              Quantitative feedstock matching aligned with thermodynamic processing bounds
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-3 hover:border-amber-500/40 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
+            <div className="pillar-card cs-card p-6 space-y-3 hover:border-amber-500/40 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center mb-4 border border-amber-500/30">
                 <Flame className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-white">Biochar Pyrolysis</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Converts dry crop residues into stable biocarbon, enriching soil and sequestering carbon permanently.
+                Converts dry agricultural crop residues into stable biocarbon, sequestering recalcitrant carbon with 100-year permanence.
               </p>
               <div className="text-[11px] text-amber-300 font-mono pt-2">
                 Ideal Feedstock: Dry Biomass (&lt;25% Moisture)
               </div>
             </div>
 
-            <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-3 hover:border-sky-500/40 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center mb-4">
+            <div className="pillar-card cs-card p-6 space-y-3 hover:border-sky-500/40 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center mb-4 border border-sky-500/30">
                 <Droplets className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-white">Biogas & CBG</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Processes organic slurries to produce biomethane fuel and organic fertilizer, avoiding landfill emissions.
+                Processes wet organic slurries through anaerobic digestion to yield compressed biomethane fuel and displace fossil natural gas.
               </p>
               <div className="text-[11px] text-sky-300 font-mono pt-2">
                 Ideal Feedstock: Organic Slurry (65–95% Moisture)
               </div>
             </div>
 
-            <div className="glass-panel p-6 rounded-2xl border border-[#1e332f] space-y-3 hover:border-purple-500/40 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center mb-4">
+            <div className="pillar-card cs-card p-6 space-y-3 hover:border-purple-500/40 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center mb-4 border border-purple-500/30">
                 <Box className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-white">Carbon-Negative Materials</h3>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Upcycles clean fibrous scrap into structural bio-composites, displacing carbon-intensive materials.
+                Upcycles clean post-industrial cellulose scrap into structural bio-composites, displacing carbon-intensive Portland cement and synthetic resins.
               </p>
               <div className="text-[11px] text-purple-300 font-mono pt-2">
                 Ideal Feedstock: Clean Fibers (&lt;15% Moisture)
@@ -321,19 +401,19 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* METHODOLOGY & TRANSPARENCY BANNER */}
+        {/* METHODOLOGY BANNER */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 w-full">
           <DisclaimerBanner />
         </section>
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-[#1e332f] bg-[#050807] py-8 text-xs text-gray-500">
+      <footer className="border-t border-[#182a25] bg-[#040605] py-8 text-xs text-gray-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-gray-300">CarbonSphere</span> — Carbon-Aware Waste Pathway Optimization Platform
           </div>
-          <div>
+          <div className="font-mono text-[11px]">
             HackOut'26 Problem: Waste-to-Carbon Value Chain Tracker
           </div>
         </div>

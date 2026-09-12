@@ -90,6 +90,8 @@ async def test_api_analyze_endpoint():
         assert "avoided_fossil_displacement_tco2e" in result
         assert "permanent_sequestration_tco2e" in result
 
+@app.get("/api/route")
+@app.post("/api/route")
 @pytest.mark.asyncio
 async def test_api_route_endpoint():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
@@ -105,3 +107,71 @@ async def test_api_route_endpoint():
         assert route_data["distance_km"] > 0.0
         assert "geometry" in route_data
         assert len(route_data["geometry"]["coordinates"]) > 2
+
+@pytest.mark.asyncio
+async def test_api_route_invalid_coordinate_validation():
+    """Security/Validation: Out-of-bounds latitude/longitude must fail with 422."""
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # Latitude > 90
+        res1 = await ac.post("/api/route", params={
+            "origin_lat": 95.0,
+            "origin_lon": 74.0,
+            "dest_lat": 18.0,
+            "dest_lon": 74.0
+        })
+        assert res1.status_code == 422
+
+        # Longitude < -180
+        res2 = await ac.post("/api/route", params={
+            "origin_lat": 18.0,
+            "origin_lon": -190.0,
+            "dest_lat": 18.0,
+            "dest_lon": 74.0
+        })
+        assert res2.status_code == 422
+
+@pytest.mark.asyncio
+async def test_api_analyze_input_validation_bounds():
+    """Security/Validation: Negative mass, moisture > 100%, and empty fields must fail with 422."""
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # Negative quantity
+        bad_quantity = {
+            "title": "Bad Waste",
+            "generator_name": "Bad Gen",
+            "waste_type": "Sludge",
+            "quantity_tonnes": -10.0,
+            "moisture_pct": 50.0,
+            "location_name": "Pune",
+            "latitude": 18.5,
+            "longitude": 74.0
+        }
+        res_qty = await ac.post("/api/analyze?objective=balanced", json=bad_quantity)
+        assert res_qty.status_code == 422
+
+        # Moisture > 100%
+        bad_moisture = {
+            "title": "Bad Moisture",
+            "generator_name": "Bad Gen",
+            "waste_type": "Sludge",
+            "quantity_tonnes": 10.0,
+            "moisture_pct": 105.0,
+            "location_name": "Pune",
+            "latitude": 18.5,
+            "longitude": 74.0
+        }
+        res_moist = await ac.post("/api/analyze?objective=balanced", json=bad_moisture)
+        assert res_moist.status_code == 422
+
+        # Invalid objective parameter
+        valid_payload = {
+            "title": "Valid Waste",
+            "generator_name": "Valid Gen",
+            "waste_type": "Straw",
+            "quantity_tonnes": 10.0,
+            "moisture_pct": 15.0,
+            "location_name": "Pune",
+            "latitude": 18.5,
+            "longitude": 74.0
+        }
+        res_obj = await ac.post("/api/analyze?objective=invalid_objective", json=valid_payload)
+        assert res_obj.status_code == 422

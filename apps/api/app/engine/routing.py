@@ -1,9 +1,11 @@
+import os
 import httpx
 import math
 from geopy.distance import geodesic
 from typing import Dict, Any, List
 
-OSRM_BASE_URL = "https://router.project-osrm.org/route/v1/driving"
+OSRM_BASE = os.getenv("OSRM_ENDPOINT", "https://router.project-osrm.org").rstrip("/")
+OSRM_BASE_URL = f"{OSRM_BASE}/route/v1/driving"
 
 async def get_route(
     origin_lat: float, origin_lon: float,
@@ -11,7 +13,7 @@ async def get_route(
 ) -> Dict[str, Any]:
     """
     Retrieves driving route between origin and destination.
-    Uses public OSRM API with automatic zero-cost geodesic fallback.
+    Uses OSRM API with automatic zero-cost geodesic fallback.
     """
     url = f"{OSRM_BASE_URL}/{origin_lon},{origin_lat};{dest_lon},{dest_lat}?overview=full&geometries=geojson"
     
