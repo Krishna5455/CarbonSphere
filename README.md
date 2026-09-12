@@ -31,9 +31,9 @@ Traditional platforms focus solely on reverse logistics or static waste matching
 
 ## 🏗️ System Architecture
 
-- **Frontend**: Next.js 15 (App Router, TypeScript, Tailwind CSS, GSAP, Lucide)
+- **Frontend (`apps/web`)**: Next.js 16 (App Router, TypeScript, Tailwind CSS, Lucide)
 - **Mapping**: MapLibre GL JS + CARTO / OpenStreetMap tiles (100% Free, ₹0 API budget)
-- **Backend API**: Python 3.13 + FastAPI + Pydantic v2
+- **Backend API (`apps/api`)**: Python 3.13 + FastAPI + Pydantic v2
 - **Database**: Supabase PostgreSQL 17 + PostGIS spatial indexing (`GEOGRAPHY(POINT, 4326)`)
 - **Routing**: Dual-pipeline OSRM API with resilient geodesic road network fallback
 
@@ -48,20 +48,20 @@ Traditional platforms focus solely on reverse logistics or static waste matching
 
 ### 1. Start the Backend API (Port 8000)
 ```bash
-cd backend
+cd apps/api
 python -m pip install -r requirements.txt
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 2. Run Backend Tests
 ```bash
-cd backend
+cd apps/api
 python -m pytest tests
 ```
 
 ### 3. Start the Frontend Application (Port 3000)
 ```bash
-cd frontend
+cd apps/web
 npm install
 npm run dev
 ```

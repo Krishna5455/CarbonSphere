@@ -1,11 +1,10 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
-import os
 
 from .schemas.domain import (
-    WasteStreamInput, FacilityResponse, OptimizationResult,
-    OptimizationObjective, DemoScenario, PathwayType
+    WasteStreamInput, OptimizationResult,
+    OptimizationObjective, DemoScenario
 )
 from .engine.optimizer import optimize_pathway, fetch_facilities
 from .engine.routing import get_route

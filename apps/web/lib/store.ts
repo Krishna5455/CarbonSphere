@@ -1,7 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { OptimizationResult, WasteStreamInput, OptimizationObjective } from './types';
+import { OptimizationResult, WasteStreamInput } from './types';
 
 const STORAGE_KEY = 'carbonsphere_current_run';
 const WASTE_KEY = 'carbonsphere_current_waste';

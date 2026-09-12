@@ -27,6 +27,7 @@ ENV/
 .env
 .env*.local
 !.env.example
+!**/.env.example
 
 # Local Screenshots
 *.png
