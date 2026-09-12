@@ -1,0 +1,132 @@
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+from enum import Enum
+from datetime import datetime, timezone
+
+class PathwayType(str, Enum):
+    BIOCHAR = "biochar"
+    BIOGAS = "biogas"
+    CARBON_MATERIALS = "carbon_materials"
+
+class OptimizationObjective(str, Enum):
+    BALANCED = "balanced"
+    MAX_CARBON = "max_carbon"
+    MAX_ECONOMIC = "max_economic"
+    MIN_LOGISTICS = "min_logistics"
+    MAX_DIVERSION = "max_diversion"
+
+class WasteStreamInput(BaseModel):
+    title: str = Field(...)
+    generator_name: str = Field(...)
+    waste_type: str = Field(...)
+    quantity_tonnes: float = Field(..., gt=0)
+    moisture_pct: float = Field(..., ge=0, le=100)
+    ash_pct: float = Field(default=4.2, ge=0, le=100)
+    carbon_nitrogen_ratio: Optional[float] = Field(default=45.0)
+    energy_density_mj_kg: Optional[float] = Field(default=16.8)
+    contamination_pct: float = Field(default=1.5, ge=0, le=100)
+    location_name: str = Field(...)
+    latitude: float = Field(..., ge=-90, le=90)
+    longitude: float = Field(..., ge=-180, le=180)
+
+class FacilityResponse(BaseModel):
+    id: str
+    name: str
+    operator: str
+    pathway: PathwayType
+    capacity_daily_tonnes: float
+    current_load_tonnes: float
+    available_capacity_tonnes: float
+    min_moisture_pct: float
+    max_moisture_pct: float
+    max_contamination_pct: float
+    gate_fee_per_tonne: float
+    process_emission_factor: float
+    byproduct_yield_factor: float
+    byproduct_market_price: float
+    location_name: str
+    latitude: float
+    longitude: float
+    distance_km: Optional[float] = None
+    duration_hrs: Optional[float] = None
+
+class CandidateEvaluation(BaseModel):
+    facility_id: str
+    facility_name: str
+    facility_location: str
+    operator: str
+    pathway: PathwayType
+    is_feasible: bool
+    rejection_reasons: List[str] = []
+    
+    # Distance and logistics
+    distance_km: float
+    duration_hrs: float
+    transport_cost_inr: float
+    transport_emissions_tco2e: float
+    
+    # Carbon metrics
+    gross_carbon_avoided_tco2e: float
+    process_emissions_tco2e: float
+    permanent_sequestration_tco2e: float
+    net_carbon_impact_tco2e: float
+    
+    # Economic metrics
+    gate_fee_revenue_or_cost_inr: float
+    byproduct_yield_tonnes: float
+    byproduct_market_value_inr: float
+    net_economic_value_inr: float
+    
+    # Scores (0 - 100)
+    carbon_score: float
+    economic_score: float
+    logistics_score: float
+    compatibility_score: float
+    capacity_score: float
+    overall_score: float
+    
+    # Explainability
+    key_drivers: List[str]
+    trade_offs: List[str]
+
+class RouteGeometry(BaseModel):
+    type: str = "LineString"
+    coordinates: List[List[float]] # [lon, lat]
+
+class OptimizationResult(BaseModel):
+    waste_stream_id: Optional[str] = None
+    objective: OptimizationObjective
+    objective_weights: Dict[str, float]
+    
+    # Selected Recommendation
+    recommended_facility_id: str
+    recommended_facility_name: str
+    recommended_pathway: PathwayType
+    
+    # Summary Impact
+    net_carbon_impact_tco2e: float
+    gross_carbon_avoided_tco2e: float
+    transport_emissions_tco2e: float
+    net_economic_value_inr: float
+    transport_cost_inr: float
+    total_distance_km: float
+    estimated_duration_hrs: float
+    
+    # Route
+    route_geometry: RouteGeometry
+    
+    # Explainability
+    why_recommended: str
+    detailed_explanation: List[str]
+    accounting_disclaimer: str
+    
+    # Ranked Alternatives
+    ranked_candidates: List[CandidateEvaluation]
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class DemoScenario(BaseModel):
+    id: str
+    title: str
+    description: str
+    waste_input: WasteStreamInput
+    expected_optimal_pathway: PathwayType

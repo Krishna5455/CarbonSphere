@@ -1,0 +1,45 @@
+import { WasteStreamInput, OptimizationObjective, OptimizationResult, Facility, DemoScenario } from './types';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+export async function fetchFacilities(pathway?: string): Promise<Facility[]> {
+  try {
+    const url = new URL(`${API_BASE_URL}/api/facilities`);
+    if (pathway) url.searchParams.append('pathway', pathway);
+    const res = await fetch(url.toString(), { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Facilities fetch failed: ${res.statusText}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend connection warning, fetching facilities via local endpoint or fallback:', err);
+    throw err;
+  }
+}
+
+export async function fetchDemoScenarios(): Promise<DemoScenario[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/scenarios`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`Scenarios fetch failed: ${res.statusText}`);
+    return await res.json();
+  } catch (err) {
+    console.warn('Fallback scenarios loaded:', err);
+    return [];
+  }
+}
+
+export async function analyzeWasteStream(
+  waste: WasteStreamInput,
+  objective: OptimizationObjective = 'balanced'
+): Promise<OptimizationResult> {
+  const res = await fetch(`${API_BASE_URL}/api/analyze?objective=${objective}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(waste),
+  });
+  
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Optimization failed: ${errText}`);
+  }
+  
+  return await res.json();
+}
