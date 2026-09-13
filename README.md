@@ -123,7 +123,6 @@ CarbonSphere/
 │       │   └── schemas/
 │       └── tests/
 ├── docs/
-├── render.yaml           # Render deployment blueprint
 └── README.md
 ```
 
