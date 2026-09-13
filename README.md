@@ -1,10 +1,55 @@
-# CarbonSphere 🌍
+# 🌍 CarbonSphere
 
-**Carbon-Aware Waste Pathway Optimization Platform**  
-*HackOut'26 Problem Statement: Waste-to-Carbon Value Chain Tracker*
+### Carbon-Aware Waste Pathway Optimization Platform
 
-> **"Don't optimize waste disposal. Optimize waste utilization."**  
-> *Given this waste stream, what is the highest-value circular pathway, which facility should receive it, what route should be used, and what carbon/economic value will result?*
+> **Don't optimize waste disposal. Optimize waste utilization.**
+
+CarbonSphere is a decision-support platform that transforms fragmented waste streams into optimized circular-economy pathways.
+
+Instead of simply asking **"Where should this waste go?"**, CarbonSphere asks:
+
+> **"What should this waste become, where should it go, how should it get there, and what carbon and economic value can it create?"**
+
+---
+
+## ♻️ The Problem
+
+Waste value chains are often fragmented.
+
+A waste generator may know:
+
+- What waste they have
+- How much they have
+- Where it is located
+
+But they may not know:
+
+- Which circular pathway is most suitable
+- Which facility can process it
+- Whether that facility has sufficient capacity
+- Which route is economically practical
+- How much carbon impact the pathway could create
+- Which option provides the highest overall value
+
+This creates a gap between **waste generation** and **measurable circular value**.
+
+---
+
+## 💡 Our Solution
+
+CarbonSphere connects the entire waste-to-value decision into one intelligent workflow:
+
+```text
+WASTE
+  ↓
+PATHWAY
+  ↓
+FACILITY
+  ↓
+ROUTE
+  ↓
+CARBON + ECONOMIC VALUE
+```
 
 ---
 
@@ -46,20 +91,33 @@ Traditional platforms focus solely on reverse logistics or static waste matching
 - Python 3.11+
 - Git
 
-### 1. Start the Backend API (Port 8000)
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Krishna5455/CarbonSphere.git
+cd CarbonSphere
+```
+
+### 2. Configure Environment Variables
+```bash
+cp apps/web/.env.example apps/web/.env.local
+cp apps/api/.env.example apps/api/.env
+# Fill in your Supabase credentials
+```
+
+### 3. Start the Backend API (Port 8000)
 ```bash
 cd apps/api
 python -m pip install -r requirements.txt
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 2. Run Backend Tests
+### 4. Run Backend Tests
 ```bash
 cd apps/api
 python -m pytest tests
 ```
 
-### 3. Start the Frontend Application (Port 3000)
+### 5. Start the Frontend Application (Port 3000)
 ```bash
 cd apps/web
 npm install
@@ -80,28 +138,62 @@ CarbonSphere deploys both the **Next.js 16 frontend** and **FastAPI optimization
    - Framework preset will automatically detect **Next.js**.
 
 2. **Configure Environment Variables in Vercel**:
-   - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL (`https://<project-id>.supabase.co`)
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Public Anonymous Key
-   - `SUPABASE_URL`: Your Supabase Project URL
-   - `SUPABASE_KEY`: Your Supabase Key (anon or service role)
-   - `OSRM_ENDPOINT`: `https://router.project-osrm.org` (optional, defaults to public OSRM with geodesic fallback)
-   - `NEXT_PUBLIC_API_URL`: *(Leave blank in Vercel production to use automatic same-origin `/api` routing)*
+
+   | Variable | Required | Description |
+   |---|---|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase Project URL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Supabase Public Anonymous Key |
+   | `SUPABASE_URL` | ✅ | Supabase Project URL (server-side) |
+   | `SUPABASE_KEY` | ✅ | Supabase Key (server-side) |
+   | `OSRM_ENDPOINT` | Optional | OSRM routing endpoint (defaults to public OSRM) |
+   | `NEXT_PUBLIC_API_URL` | Optional | Leave blank in production for same-origin `/api` routing |
 
 3. **Deploy**:
-   - Click **Deploy**. Vercel builds the Next.js frontend and provisions the Python FastAPI serverless function at `/api/*` under your project domain (`https://<your-project>.vercel.app`).
+   - Click **Deploy**. Vercel builds the Next.js frontend and provisions the Python FastAPI serverless function at `/api/*` under your project domain.
 
-
+---
 
 ## 🧪 Controlled Hackathon Benchmarks
 
 CarbonSphere includes 3 deterministic demo scenarios demonstrating divergent pathway selection:
-1. **25 Tonnes Agricultural Biomass** (14.5% moisture, 4.2% ash) $\to$ **Biochar Pyrolysis**
-2. **40 Tonnes Food-Processing Sludge** (82% moisture, 2.1% ash) $\to$ **Biogas Anaerobic Digestion**
-3. **15 Tonnes Post-Industrial Cellulosic Fiber** (9% moisture, 1.5% ash) $\to$ **Carbon-Negative Materials**
+
+| Scenario | Feedstock | Optimal Pathway |
+|---|---|---|
+| 1 | 25 Tonnes Agricultural Biomass (14.5% moisture, 4.2% ash) | **Biochar Pyrolysis** |
+| 2 | 40 Tonnes Food-Processing Sludge (82% moisture, 2.1% ash) | **Biogas Anaerobic Digestion** |
+| 3 | 15 Tonnes Post-Industrial Cellulosic Fiber (9% moisture, 1.5% ash) | **Carbon-Negative Materials** |
 
 Visit `/demo` or click **"Demo Scenarios"** in the navigation bar to run live comparisons.
 
 ---
 
 ## ⚖️ Carbon Accounting Rule & Transparency
+
 All emissions reductions in CarbonSphere are **model-based engineering estimates** designed for circular decision intelligence. They are not presented as certified third-party carbon credits. Every metric is traceable to scientific standards detailed in `/platform/impact`.
+
+---
+
+## 📁 Repository Structure
+
+```text
+CarbonSphere/
+├── apps/
+│   ├── web/              # Next.js 16 frontend + Vercel Python API
+│   │   ├── app/          # App Router pages
+│   │   ├── api/          # FastAPI serverless function (Vercel)
+│   │   ├── components/   # Shared UI components
+│   │   ├── lib/          # API client, Supabase, types
+│   │   └── requirements.txt
+│   └── api/              # Standalone FastAPI backend (local dev / Render)
+│       ├── app/
+│       │   ├── engine/   # Optimization, carbon, economics, routing
+│       │   └── schemas/
+│       └── tests/
+├── docs/
+├── render.yaml           # Render deployment blueprint
+└── README.md
+```
+
+---
+
+*Built for HackOut'26 — Waste-to-Carbon Value Chain Tracker*
