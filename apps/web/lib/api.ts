@@ -1,23 +1,38 @@
 import { WasteStreamInput, OptimizationObjective, OptimizationResult, Facility, DemoScenario } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+function getEndpointUrl(path: string, params?: Record<string, string>): string {
+  const base = process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '') : '';
+  const fullPath = `${base}${path.startsWith('/') ? path : `/${path}`}`;
+  
+  if (params && Object.keys(params).length > 0) {
+    const searchParams = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== null && v !== '') {
+        searchParams.append(k, v);
+      }
+    }
+    const queryString = searchParams.toString();
+    return queryString ? `${fullPath}?${queryString}` : fullPath;
+  }
+  return fullPath;
+}
 
 export async function fetchFacilities(pathway?: string): Promise<Facility[]> {
   try {
-    const url = new URL(`${API_BASE_URL}/api/facilities`);
-    if (pathway) url.searchParams.append('pathway', pathway);
-    const res = await fetch(url.toString(), { cache: 'no-store' });
+    const endpoint = getEndpointUrl('/api/facilities', pathway ? { pathway } : undefined);
+    const res = await fetch(endpoint, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Facilities fetch failed: ${res.statusText}`);
     return await res.json();
   } catch (err) {
-    console.warn('Backend connection warning, fetching facilities via local endpoint or fallback:', err);
+    console.warn('Backend connection warning, fetching facilities via fallback:', err);
     throw err;
   }
 }
 
 export async function fetchDemoScenarios(): Promise<DemoScenario[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/scenarios`, { cache: 'no-store' });
+    const endpoint = getEndpointUrl('/api/scenarios');
+    const res = await fetch(endpoint, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Scenarios fetch failed: ${res.statusText}`);
     return await res.json();
   } catch (err) {
@@ -30,12 +45,16 @@ export async function analyzeWasteStream(
   waste: WasteStreamInput,
   objective: OptimizationObjective = 'balanced'
 ): Promise<OptimizationResult> {
-  const res = await fetch(`${API_BASE_URL}/api/analyze?objective=${objective}`, {
+  const endpoint = getEndpointUrl('/api/analyze', { objective });
+  const res = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(waste),
   });
   
+  if (!res.ok) {
+    throw new Error(`Analysis calculation failed: ${res.statusText}`);
+  }
   return await res.json();
 }
 
@@ -45,15 +64,17 @@ export async function fetchRoute(
   destLat: number,
   destLon: number
 ): Promise<{ distance_km: number; duration_hrs: number; geometry: { type: string; coordinates: [number, number][] }; source?: string }> {
-  const url = new URL(`${API_BASE_URL}/api/route`);
-  url.searchParams.append('origin_lat', originLat.toString());
-  url.searchParams.append('origin_lon', originLon.toString());
-  url.searchParams.append('dest_lat', destLat.toString());
-  url.searchParams.append('dest_lon', destLon.toString());
+  const endpoint = getEndpointUrl('/api/route', {
+    origin_lat: originLat.toString(),
+    origin_lon: originLon.toString(),
+    dest_lat: destLat.toString(),
+    dest_lon: destLon.toString(),
+  });
   
-  const res = await fetch(url.toString());
+  const res = await fetch(endpoint);
   if (!res.ok) {
     throw new Error(`Route calculation failed: ${res.statusText}`);
   }
   return await res.json();
 }
+

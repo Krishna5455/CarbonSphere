@@ -70,25 +70,26 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🌐 Production Deployment Guide (₹0 Budget)
+## 🌐 Production Deployment Guide (Vercel Unified — ₹0 Budget)
 
-- **Frontend (Vercel)**:
-  - Connect GitHub repository to Vercel.
-  - Set Root Directory to `apps/web`.
-  - Add Environment Variables:
-    - `NEXT_PUBLIC_API_URL`: Your deployed Render API URL (e.g., `https://carbonsphere-api.onrender.com`)
-    - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL
-    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anonymous Key
-- **Backend (Render Free)**:
-  - Connect GitHub repository via Render Blueprint (`render.yaml`) or Web Service.
-  - Set Root Directory to `apps/api`.
-  - Build Command: `pip install -r requirements.txt`
-  - Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-  - Add Environment Variables: `SUPABASE_URL`, `SUPABASE_KEY`, `CORS_ORIGINS` (your Vercel domain).
-- **Database (Supabase)**:
-  - PostgreSQL 17 + PostGIS instance hosting `facilities`, `waste_streams`, and `optimization_runs`.
+CarbonSphere deploys both the **Next.js 16 frontend** and **FastAPI optimization engine** as a single unified Vercel project:
 
----
+1. **Import Repository to Vercel**:
+   - Connect GitHub repository `Krishna5455/CarbonSphere` on [vercel.com](https://vercel.com).
+   - Set **Root Directory** to `apps/web`.
+   - Framework preset will automatically detect **Next.js**.
+
+2. **Configure Environment Variables in Vercel**:
+   - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL (`https://<project-id>.supabase.co`)
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Public Anonymous Key
+   - `SUPABASE_URL`: Your Supabase Project URL
+   - `SUPABASE_KEY`: Your Supabase Key (anon or service role)
+   - `OSRM_ENDPOINT`: `https://router.project-osrm.org` (optional, defaults to public OSRM with geodesic fallback)
+   - `NEXT_PUBLIC_API_URL`: *(Leave blank in Vercel production to use automatic same-origin `/api` routing)*
+
+3. **Deploy**:
+   - Click **Deploy**. Vercel builds the Next.js frontend and provisions the Python FastAPI serverless function at `/api/*` under your project domain (`https://<your-project>.vercel.app`).
+
 
 
 ## 🧪 Controlled Hackathon Benchmarks
