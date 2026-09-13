@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
@@ -17,15 +18,30 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow CORS for Next.js frontend
+# Production-safe CORS configuration
+# Allows explicit domains via CORS_ORIGINS / ALLOWED_ORIGINS, plus local dev and Vercel deployments
+default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+env_origins = os.getenv("CORS_ORIGINS") or os.getenv("ALLOWED_ORIGINS") or ""
+custom_origins = [origin.strip() for origin in env_origins.split(",") if origin.strip()]
+allowed_origins = list(set(default_origins + custom_origins))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+@app.get("/")
+@app.get("/health")
 @app.get("/api/health")
 def health_check():
     return {

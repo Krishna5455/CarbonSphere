@@ -22,6 +22,11 @@
     --input: #182a25;
     --ring: #10b981;
     --radius: 0.75rem;
+
+    /* Pathway accent colors */
+    --biochar: #f59e0b;
+    --biogas: #06b6d4;
+    --carbon-materials: #a855f7;
   }
 }
 
@@ -33,7 +38,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* CarbonSphere Design System Component Primitives */
+/* =========================================
+   CarbonSphere Design System - Core Cards
+   ========================================= */
 .cs-card {
   background: rgba(12, 18, 16, 0.85);
   backdrop-filter: blur(12px);
@@ -69,25 +76,29 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
+/* =========================================
+   Buttons
+   ========================================= */
 .cs-button-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
   background-color: #10b981;
   color: #031c14;
   font-weight: 700;
   font-size: 0.875rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  box-shadow: 0 0 20px 0 rgba(16, 185, 129, 0.15), 0 4px 14px 0 rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 .cs-button-primary:hover {
   background-color: #34d399;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px 0 rgba(16, 185, 129, 0.25), 0 8px 24px 0 rgba(16, 185, 129, 0.3);
 }
 
 .cs-button-primary:active {
@@ -99,23 +110,26 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
-  background-color: #111a17;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  background-color: rgba(17, 26, 23, 0.8);
   color: #e2e8f0;
   font-weight: 600;
   font-size: 0.875rem;
-  border: 1px solid #182a25;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(24, 42, 37, 0.9);
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .cs-button-secondary:hover {
-  background-color: #162420;
+  background-color: rgba(22, 36, 32, 0.95);
   color: #ffffff;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
 }
 
-/* Glassmorphism legacy alias */
+/* =========================================
+   Glassmorphism legacy alias
+   ========================================= */
 .glass-panel {
   background: rgba(12, 18, 16, 0.85);
   backdrop-filter: blur(12px);
@@ -129,7 +143,474 @@ body {
   transition: all 0.25s ease;
 }
 
-/* Custom scrollbars */
+/* =========================================
+   Atmospheric Glows & Lighting
+   ========================================= */
+.cs-glow-emerald {
+  box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.25);
+}
+
+.cs-glow-amber {
+  box-shadow: 0 0 50px -10px rgba(245, 158, 11, 0.22);
+}
+
+.cs-glow-cyan {
+  box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.22);
+}
+
+.cs-glow-purple {
+  box-shadow: 0 0 50px -10px rgba(168, 85, 247, 0.22);
+}
+
+.cs-ambient-spotlight {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(140px);
+  opacity: 0.12;
+  z-index: 0;
+}
+
+/* =========================================
+   Hero Section
+   ========================================= */
+.cs-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.cs-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.cs-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  opacity: 0.35;
+  filter: brightness(0.6) saturate(0.9);
+  transition: transform 8s ease-out;
+}
+
+.cs-hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(6, 9, 8, 0.6) 0%, rgba(6, 9, 8, 0.3) 40%, rgba(6, 9, 8, 0.8) 80%, rgba(6, 9, 8, 1) 100%),
+    linear-gradient(90deg, rgba(6, 9, 8, 0.8) 0%, transparent 30%, transparent 70%, rgba(6, 9, 8, 0.8) 100%);
+  z-index: 1;
+}
+
+.cs-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Breadcrumb trail */
+.cs-hero-trail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(110, 231, 183, 0.6);
+  font-weight: 500;
+}
+
+.cs-hero-trail span {
+  color: rgba(156, 163, 175, 0.5);
+}
+
+/* =========================================
+   Storyboard Sections
+   ========================================= */
+.cs-section {
+  position: relative;
+  padding: 6rem 0;
+  overflow: hidden;
+}
+
+.cs-section-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(110, 231, 183, 0.5);
+  font-weight: 600;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+.cs-section-title {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.cs-section-title .highlight {
+  color: #10b981;
+}
+
+.cs-section-subtitle {
+  font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+  color: rgba(156, 163, 175, 0.8);
+  line-height: 1.6;
+  max-width: 36rem;
+}
+
+/* =========================================
+   Pathway Cards
+   ========================================= */
+.cs-pathway-card {
+  position: relative;
+  background: rgba(12, 18, 16, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(24, 42, 37, 0.7);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  cursor: default;
+}
+
+.cs-pathway-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 0%, transparent 100%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.cs-pathway-card:hover {
+  transform: translateY(-4px);
+  border-color: transparent;
+  background: rgba(15, 23, 20, 0.9);
+}
+
+.cs-pathway-card.biochar:hover {
+  box-shadow: 0 8px 40px -10px rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.cs-pathway-card.biochar:hover::before {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, transparent 60%);
+  opacity: 1;
+}
+
+.cs-pathway-card.biogas:hover {
+  box-shadow: 0 8px 40px -10px rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.3);
+}
+.cs-pathway-card.biogas:hover::before {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.4) 0%, transparent 60%);
+  opacity: 1;
+}
+
+.cs-pathway-card.carbon-materials:hover {
+  box-shadow: 0 8px 40px -10px rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+.cs-pathway-card.carbon-materials:hover::before {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, transparent 60%);
+  opacity: 1;
+}
+
+/* Pathway icon container */
+.cs-pathway-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.cs-pathway-icon.biochar {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #f59e0b;
+}
+.cs-pathway-icon.biogas {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: #06b6d4;
+}
+.cs-pathway-icon.carbon-materials {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #a855f7;
+}
+
+/* =========================================
+   Engine / Decision Visualization
+   ========================================= */
+.cs-engine-metric {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(12, 18, 16, 0.6);
+  border: 1px solid rgba(24, 42, 37, 0.5);
+  transition: all 0.3s ease;
+}
+
+.cs-engine-metric.active {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.cs-engine-metric .metric-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(24, 42, 37, 0.8);
+  overflow: hidden;
+}
+
+.cs-engine-metric .metric-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: #10b981;
+  transform-origin: left;
+  transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Candidate cards */
+.cs-candidate-card {
+  background: rgba(12, 18, 16, 0.7);
+  border: 1px solid rgba(24, 42, 37, 0.7);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.cs-candidate-card.recommended {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.05);
+  box-shadow: 0 0 30px -10px rgba(16, 185, 129, 0.15);
+}
+
+/* =========================================
+   Route Visualization
+   ========================================= */
+.cs-route-line {
+  position: relative;
+  height: 2px;
+  background: rgba(24, 42, 37, 0.5);
+  border-radius: 1px;
+  overflow: visible;
+}
+
+.cs-route-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  border-radius: 1px;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  transition: width 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.cs-route-line.animate::after {
+  width: 100%;
+}
+
+.cs-route-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  background: #060908;
+  position: relative;
+  z-index: 1;
+}
+
+.cs-route-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  animation: routePulse 2s ease-in-out infinite;
+}
+
+@keyframes routePulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.5); opacity: 0; }
+}
+
+/* =========================================
+   Impact / Count-up Metrics
+   ========================================= */
+.cs-impact-value {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.cs-impact-label {
+  font-size: 0.75rem;
+  color: rgba(156, 163, 175, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+/* =========================================
+   Connector Lines & Branching Visuals (SVG/CSS)
+   ========================================= */
+.cs-connector {
+  stroke: rgba(24, 42, 37, 0.6);
+  stroke-width: 1.5;
+  fill: none;
+  transition: stroke 0.4s ease, opacity 0.4s ease;
+}
+
+.cs-connector.active {
+  stroke: rgba(16, 185, 129, 0.6);
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.3));
+}
+
+.cs-branch-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cs-branch-path {
+  fill: none;
+  stroke: rgba(24, 42, 37, 0.8);
+  stroke-width: 1.75;
+  stroke-dasharray: 4 6;
+  transition: stroke 0.35s ease, stroke-width 0.35s ease, filter 0.35s ease;
+}
+
+.cs-branch-path.active-biochar {
+  stroke: #f59e0b;
+  stroke-width: 2.5;
+  stroke-dasharray: 8 6;
+  animation: branchFlow 1.2s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+.cs-branch-path.active-biogas {
+  stroke: #06b6d4;
+  stroke-width: 2.5;
+  stroke-dasharray: 8 6;
+  animation: branchFlow 1.2s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+}
+
+.cs-branch-path.active-carbon-materials {
+  stroke: #a855f7;
+  stroke-width: 2.5;
+  stroke-dasharray: 8 6;
+  animation: branchFlow 1.2s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.6));
+}
+
+@keyframes branchFlow {
+  from {
+    stroke-dashoffset: 28;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Engine Radar & Scanline */
+.cs-scanner-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.8), transparent);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+  animation: scanVertical 4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes scanVertical {
+  0% { transform: translateY(0); opacity: 0.2; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(240px); opacity: 0.2; }
+}
+
+/* =========================================
+   Grain / Noise Overlay
+   ========================================= */
+.cs-grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+/* =========================================
+   Flow Chain (Loop Section)
+   ========================================= */
+.cs-flow-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  background: rgba(12, 18, 16, 0.5);
+  border: 1px solid rgba(24, 42, 37, 0.5);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(243, 247, 246, 0.8);
+  transition: all 0.3s ease;
+}
+
+.cs-flow-step.active {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.cs-flow-arrow {
+  color: rgba(16, 185, 129, 0.3);
+  font-size: 0.75rem;
+}
+
+/* =========================================
+   Custom scrollbars
+   ========================================= */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -148,7 +629,9 @@ body {
   background: #10b981;
 }
 
-/* MapLibre popup customization */
+/* =========================================
+   MapLibre popup customization
+   ========================================= */
 .maplibregl-popup-content {
   background: #0c1210 !important;
   color: #f3f7f6 !important;
@@ -162,3 +645,26 @@ body {
   border-top-color: #0c1210 !important;
 }
 
+/* =========================================
+   Reduced Motion
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  .cs-hero-bg img {
+    transition: none;
+  }
+  .cs-pathway-card,
+  .cs-candidate-card,
+  .cs-engine-metric,
+  .cs-button-primary,
+  .cs-button-secondary,
+  .cs-card-interactive,
+  .cs-flow-step {
+    transition: none;
+  }
+  .cs-route-dot::after {
+    animation: none;
+  }
+  .cs-route-line::after {
+    transition: none;
+  }
+}

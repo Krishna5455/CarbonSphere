@@ -126,7 +126,7 @@ export default function DemoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080c0b] text-[#f1f5f4] flex flex-col">
+    <div className="min-h-screen bg-[#060908] text-[#f3f7f6] flex flex-col cs-grain">
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

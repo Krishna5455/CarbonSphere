@@ -23,18 +23,27 @@ ENV/
 *.egg
 .pytest_cache/
 
-# Environment variables
+# Environment variables (ignore secret envs, allow example templates)
 .env
-.env*.local
-!.env.example
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
 !**/.env.example
+!.env.example
 
-# Local Screenshots
-*.png
+
+# Local Screenshots & root reference images
+/*.png
 screenshot_*.png
 *.swp
 *.swo
 
+# Allow static assets in web public folder
+!apps/web/public/**
+
 # OS
 .DS_Store
 Thumbs.db
+

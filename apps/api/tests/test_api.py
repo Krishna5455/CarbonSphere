@@ -6,11 +6,12 @@ from app.schemas.domain import OptimizationObjective, FeedstockCategory
 @pytest.mark.asyncio
 async def test_api_health():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        res = await ac.get("/api/health")
-        assert res.status_code == 200
-        data = res.json()
-        assert data["status"] == "healthy"
-        assert data["service"] == "CarbonSphere Optimization Engine"
+        for path in ["/api/health", "/health", "/"]:
+            res = await ac.get(path)
+            assert res.status_code == 200
+            data = res.json()
+            assert data["status"] == "healthy"
+            assert data["service"] == "CarbonSphere Optimization Engine"
 
 @pytest.mark.asyncio
 async def test_api_scenarios():

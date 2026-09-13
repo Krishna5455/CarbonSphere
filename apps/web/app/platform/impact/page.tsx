@@ -55,7 +55,7 @@ export default function ImpactPage() {
 
   if (isLoading || !result || !waste) {
     return (
-      <div className="min-h-screen bg-[#080c0b] text-white flex flex-col">
+      <div className="min-h-screen bg-[#060908] text-[#f3f7f6] flex flex-col cs-grain">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center space-y-4">
           <RefreshCw className="w-8 h-8 animate-spin text-emerald-400" />
@@ -68,7 +68,7 @@ export default function ImpactPage() {
   const winner = result.ranked_candidates.find((c) => c.facility_id === result.recommended_facility_id);
 
   return (
-    <div className="min-h-screen bg-[#080c0b] text-[#f1f5f4] flex flex-col">
+    <div className="min-h-screen bg-[#060908] text-[#f3f7f6] flex flex-col cs-grain">
       <Navbar />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

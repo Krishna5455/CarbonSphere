@@ -70,6 +70,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## 🌐 Production Deployment Guide (₹0 Budget)
+
+- **Frontend (Vercel)**:
+  - Connect GitHub repository to Vercel.
+  - Set Root Directory to `apps/web`.
+  - Add Environment Variables:
+    - `NEXT_PUBLIC_API_URL`: Your deployed Render API URL (e.g., `https://carbonsphere-api.onrender.com`)
+    - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL
+    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anonymous Key
+- **Backend (Render Free)**:
+  - Connect GitHub repository via Render Blueprint (`render.yaml`) or Web Service.
+  - Set Root Directory to `apps/api`.
+  - Build Command: `pip install -r requirements.txt`
+  - Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+  - Add Environment Variables: `SUPABASE_URL`, `SUPABASE_KEY`, `CORS_ORIGINS` (your Vercel domain).
+- **Database (Supabase)**:
+  - PostgreSQL 17 + PostGIS instance hosting `facilities`, `waste_streams`, and `optimization_runs`.
+
+---
+
+
 ## 🧪 Controlled Hackathon Benchmarks
 
 CarbonSphere includes 3 deterministic demo scenarios demonstrating divergent pathway selection:
